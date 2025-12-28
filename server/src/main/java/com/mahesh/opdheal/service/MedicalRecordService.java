@@ -1,5 +1,6 @@
 package com.mahesh.opdheal.service;
 
+import com.mahesh.opdheal.exception.ResourceNotFoundException;
 import com.mahesh.opdheal.model.MedicalRecord;
 import com.mahesh.opdheal.repository.MedicalRecordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,20 +42,25 @@ public class MedicalRecordService {
     }
 
     public MedicalRecord updateMedicalRecord(String id, MedicalRecord recordDetails) {
-        Optional<MedicalRecord> optionalRecord = medicalRecordRepository.findById(id);
-        if (optionalRecord.isPresent()) {
-            MedicalRecord record = optionalRecord.get();
-            record.setDiagnosis(recordDetails.getDiagnosis());
-            record.setSymptoms(recordDetails.getSymptoms());
-            record.setTreatment(recordDetails.getTreatment());
-            record.setPrescribedMedicines(recordDetails.getPrescribedMedicines());
-            record.setNotes(recordDetails.getNotes());
-            return medicalRecordRepository.save(record);
-        }
-        throw new RuntimeException("Medical record not found");
+        MedicalRecord record = medicalRecordRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Medical record not found with id: " + id));
+
+        record.setPatientId(recordDetails.getPatientId());
+        record.setDoctorId(recordDetails.getDoctorId());
+        record.setAppointmentId(recordDetails.getAppointmentId());
+        record.setDiagnosis(recordDetails.getDiagnosis());
+        record.setSymptoms(recordDetails.getSymptoms());
+        record.setTreatment(recordDetails.getTreatment());
+        record.setPrescribedMedicines(recordDetails.getPrescribedMedicines());
+        record.setNotes(recordDetails.getNotes());
+        
+        return medicalRecordRepository.save(record);
     }
 
     public void deleteMedicalRecord(String id) {
+        if (!medicalRecordRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Medical record not found with id: " + id);
+        }
         medicalRecordRepository.deleteById(id);
     }
 }

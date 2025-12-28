@@ -2,6 +2,7 @@ package com.mahesh.opdheal.controller;
 
 import com.mahesh.opdheal.model.Doctor;
 import com.mahesh.opdheal.service.DoctorService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,7 +19,7 @@ public class DoctorController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Doctor> createDoctor(@RequestBody Doctor doctor) {
+    public ResponseEntity<Doctor> createDoctor(@Valid @RequestBody Doctor doctor) {
         return ResponseEntity.ok(doctorService.createDoctor(doctor));
     }
 
@@ -49,13 +50,9 @@ public class DoctorController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or @doctorService.getDoctorById(#id).get().getUserId() == authentication.principal.userId")
-    public ResponseEntity<Doctor> updateDoctor(@PathVariable String id, @RequestBody Doctor doctor) {
-        try {
-            return ResponseEntity.ok(doctorService.updateDoctor(id, doctor));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
-        }
+    @PreAuthorize("hasRole('ADMIN') or @customSecurityExpression.hasUserId(authentication, #id)")
+    public ResponseEntity<Doctor> updateDoctor(@PathVariable String id, @Valid @RequestBody Doctor doctor) {
+        return ResponseEntity.ok(doctorService.updateDoctor(id, doctor));
     }
 
     @DeleteMapping("/{id}")

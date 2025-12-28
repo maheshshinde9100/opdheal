@@ -1,5 +1,6 @@
 package com.mahesh.opdheal.service;
 
+import com.mahesh.opdheal.exception.ResourceNotFoundException;
 import com.mahesh.opdheal.model.Doctor;
 import com.mahesh.opdheal.repository.DoctorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,22 +40,25 @@ public class DoctorService {
     }
 
     public Doctor updateDoctor(String id, Doctor doctorDetails) {
-        Optional<Doctor> optionalDoctor = doctorRepository.findById(id);
-        if (optionalDoctor.isPresent()) {
-            Doctor doctor = optionalDoctor.get();
-            doctor.setSpecialization(doctorDetails.getSpecialization());
-            doctor.setLicenseNumber(doctorDetails.getLicenseNumber());
-            doctor.setPhoneNumber(doctorDetails.getPhoneNumber());
-            doctor.setQualifications(doctorDetails.getQualifications());
-            doctor.setExperienceYears(doctorDetails.getExperienceYears());
-            doctor.setDepartment(doctorDetails.getDepartment());
-            doctor.setAvailable(doctorDetails.isAvailable());
-            return doctorRepository.save(doctor);
-        }
-        throw new RuntimeException("Doctor not found");
+        Doctor doctor = doctorRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Doctor not found with id: " + id));
+
+        doctor.setUserId(doctorDetails.getUserId());
+        doctor.setSpecialization(doctorDetails.getSpecialization());
+        doctor.setLicenseNumber(doctorDetails.getLicenseNumber());
+        doctor.setPhoneNumber(doctorDetails.getPhoneNumber());
+        doctor.setQualifications(doctorDetails.getQualifications());
+        doctor.setExperienceYears(doctorDetails.getExperienceYears());
+        doctor.setDepartment(doctorDetails.getDepartment());
+        doctor.setAvailable(doctorDetails.isAvailable());
+
+        return doctorRepository.save(doctor);
     }
 
     public void deleteDoctor(String id) {
+        if (!doctorRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Doctor not found with id: " + id);
+        }
         doctorRepository.deleteById(id);
     }
 }

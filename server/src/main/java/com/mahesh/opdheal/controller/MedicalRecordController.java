@@ -2,6 +2,7 @@ package com.mahesh.opdheal.controller;
 
 import com.mahesh.opdheal.model.MedicalRecord;
 import com.mahesh.opdheal.service.MedicalRecordService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,7 +19,7 @@ public class MedicalRecordController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('DOCTOR')")
-    public ResponseEntity<MedicalRecord> createMedicalRecord(@RequestBody MedicalRecord medicalRecord) {
+    public ResponseEntity<MedicalRecord> createMedicalRecord(@Valid @RequestBody MedicalRecord medicalRecord) {
         return ResponseEntity.ok(medicalRecordService.createMedicalRecord(medicalRecord));
     }
 
@@ -29,13 +30,13 @@ public class MedicalRecordController {
     }
 
     @GetMapping("/patient/{patientId}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('DOCTOR')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('DOCTOR') or @customSecurityExpression.hasUserId(authentication, #patientId)")
     public ResponseEntity<List<MedicalRecord>> getMedicalRecordsByPatient(@PathVariable String patientId) {
         return ResponseEntity.ok(medicalRecordService.getMedicalRecordsByPatient(patientId));
     }
 
     @GetMapping("/doctor/{doctorId}")
-    @PreAuthorize("hasRole('ADMIN') or @medicalRecordService.getMedicalRecordsByDoctor(#doctorId).contains(authentication.principal)")
+    @PreAuthorize("hasRole('ADMIN') or @customSecurityExpression.hasUserId(authentication, #doctorId)")
     public ResponseEntity<List<MedicalRecord>> getMedicalRecordsByDoctor(@PathVariable String doctorId) {
         return ResponseEntity.ok(medicalRecordService.getMedicalRecordsByDoctor(doctorId));
     }
@@ -56,12 +57,8 @@ public class MedicalRecordController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('DOCTOR')")
-    public ResponseEntity<MedicalRecord> updateMedicalRecord(@PathVariable String id, @RequestBody MedicalRecord medicalRecord) {
-        try {
-            return ResponseEntity.ok(medicalRecordService.updateMedicalRecord(id, medicalRecord));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<MedicalRecord> updateMedicalRecord(@PathVariable String id, @Valid @RequestBody MedicalRecord medicalRecord) {
+        return ResponseEntity.ok(medicalRecordService.updateMedicalRecord(id, medicalRecord));
     }
 
     @DeleteMapping("/{id}")

@@ -1,5 +1,7 @@
 package com.mahesh.opdheal.model;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -12,13 +14,20 @@ import java.util.List;
 public class Patient {
     @Id
     private String id;
-    private String userId; // Reference to User
+
+    @NotBlank(message = "User ID is mandatory")
+    private String userId;
+
+    @NotBlank(message = "Phone number is mandatory")
     private String phoneNumber;
+
+    @NotNull(message = "Date of birth is mandatory")
     private LocalDate dateOfBirth;
+
     private String gender;
     private String address;
     private String emergencyContact;
     private List<String> allergies;
     private String bloodGroup;
-    private String medicalHistory; // Could be a list or detailed object later
+    private String medicalHistory;
 }

@@ -2,6 +2,7 @@ package com.mahesh.opdheal.controller;
 
 import com.mahesh.opdheal.model.Prescription;
 import com.mahesh.opdheal.service.PrescriptionService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,7 +19,7 @@ public class PrescriptionController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('DOCTOR')")
-    public ResponseEntity<Prescription> createPrescription(@RequestBody Prescription prescription) {
+    public ResponseEntity<Prescription> createPrescription(@Valid @RequestBody Prescription prescription) {
         return ResponseEntity.ok(prescriptionService.createPrescription(prescription));
     }
 
@@ -29,13 +30,13 @@ public class PrescriptionController {
     }
 
     @GetMapping("/patient/{patientId}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('DOCTOR')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('DOCTOR') or @customSecurityExpression.hasUserId(authentication, #patientId)")
     public ResponseEntity<List<Prescription>> getPrescriptionsByPatient(@PathVariable String patientId) {
         return ResponseEntity.ok(prescriptionService.getPrescriptionsByPatient(patientId));
     }
 
     @GetMapping("/doctor/{doctorId}")
-    @PreAuthorize("hasRole('ADMIN') or @prescriptionService.getPrescriptionsByDoctor(#doctorId).contains(authentication.principal)")
+    @PreAuthorize("hasRole('ADMIN') or @customSecurityExpression.hasUserId(authentication, #doctorId)")
     public ResponseEntity<List<Prescription>> getPrescriptionsByDoctor(@PathVariable String doctorId) {
         return ResponseEntity.ok(prescriptionService.getPrescriptionsByDoctor(doctorId));
     }
@@ -56,12 +57,8 @@ public class PrescriptionController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('DOCTOR')")
-    public ResponseEntity<Prescription> updatePrescription(@PathVariable String id, @RequestBody Prescription prescription) {
-        try {
-            return ResponseEntity.ok(prescriptionService.updatePrescription(id, prescription));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<Prescription> updatePrescription(@PathVariable String id, @Valid @RequestBody Prescription prescription) {
+        return ResponseEntity.ok(prescriptionService.updatePrescription(id, prescription));
     }
 
     @DeleteMapping("/{id}")

@@ -2,6 +2,7 @@ package com.mahesh.opdheal.controller;
 
 import com.mahesh.opdheal.model.Patient;
 import com.mahesh.opdheal.service.PatientService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,7 +19,7 @@ public class PatientController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('DOCTOR')")
-    public ResponseEntity<Patient> createPatient(@RequestBody Patient patient) {
+    public ResponseEntity<Patient> createPatient(@Valid @RequestBody Patient patient) {
         return ResponseEntity.ok(patientService.createPatient(patient));
     }
 
@@ -29,7 +30,7 @@ public class PatientController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('DOCTOR') or @patientService.getPatientById(#id).get().getUserId() == authentication.principal.userId")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('DOCTOR') or @customSecurityExpression.hasUserId(authentication, #id)")
     public ResponseEntity<Patient> getPatientById(@PathVariable String id) {
         return patientService.getPatientById(id)
                 .map(ResponseEntity::ok)
@@ -38,12 +39,8 @@ public class PatientController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('DOCTOR')")
-    public ResponseEntity<Patient> updatePatient(@PathVariable String id, @RequestBody Patient patient) {
-        try {
-            return ResponseEntity.ok(patientService.updatePatient(id, patient));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<Patient> updatePatient(@PathVariable String id, @Valid @RequestBody Patient patient) {
+        return ResponseEntity.ok(patientService.updatePatient(id, patient));
     }
 
     @DeleteMapping("/{id}")

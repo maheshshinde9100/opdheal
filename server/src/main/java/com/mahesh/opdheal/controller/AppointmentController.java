@@ -2,6 +2,7 @@ package com.mahesh.opdheal.controller;
 
 import com.mahesh.opdheal.model.Appointment;
 import com.mahesh.opdheal.service.AppointmentService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ public class AppointmentController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('PATIENT')")
-    public ResponseEntity<Appointment> createAppointment(@RequestBody Appointment appointment) {
+    public ResponseEntity<Appointment> createAppointment(@Valid @RequestBody Appointment appointment) {
         return ResponseEntity.ok(appointmentService.createAppointment(appointment));
     }
 
@@ -31,13 +32,13 @@ public class AppointmentController {
     }
 
     @GetMapping("/patient/{patientId}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('DOCTOR') or @appointmentService.getAppointmentsByPatient(#patientId).contains(authentication.principal)")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('DOCTOR') or @customSecurityExpression.hasUserId(authentication, #patientId)")
     public ResponseEntity<List<Appointment>> getAppointmentsByPatient(@PathVariable String patientId) {
         return ResponseEntity.ok(appointmentService.getAppointmentsByPatient(patientId));
     }
 
     @GetMapping("/doctor/{doctorId}")
-    @PreAuthorize("hasRole('ADMIN') or @appointmentService.getAppointmentsByDoctor(#doctorId).contains(authentication.principal)")
+    @PreAuthorize("hasRole('ADMIN') or @customSecurityExpression.hasUserId(authentication, #doctorId)")
     public ResponseEntity<List<Appointment>> getAppointmentsByDoctor(@PathVariable String doctorId) {
         return ResponseEntity.ok(appointmentService.getAppointmentsByDoctor(doctorId));
     }
@@ -66,12 +67,8 @@ public class AppointmentController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('DOCTOR')")
-    public ResponseEntity<Appointment> updateAppointment(@PathVariable String id, @RequestBody Appointment appointment) {
-        try {
-            return ResponseEntity.ok(appointmentService.updateAppointment(id, appointment));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<Appointment> updateAppointment(@PathVariable String id, @Valid @RequestBody Appointment appointment) {
+        return ResponseEntity.ok(appointmentService.updateAppointment(id, appointment));
     }
 
     @DeleteMapping("/{id}")

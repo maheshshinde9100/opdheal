@@ -1,5 +1,6 @@
 package com.mahesh.opdheal.service;
 
+import com.mahesh.opdheal.exception.ResourceNotFoundException;
 import com.mahesh.opdheal.model.Patient;
 import com.mahesh.opdheal.repository.PatientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,23 +32,26 @@ public class PatientService {
     }
 
     public Patient updatePatient(String id, Patient patientDetails) {
-        Optional<Patient> optionalPatient = patientRepository.findById(id);
-        if (optionalPatient.isPresent()) {
-            Patient patient = optionalPatient.get();
-            patient.setPhoneNumber(patientDetails.getPhoneNumber());
-            patient.setDateOfBirth(patientDetails.getDateOfBirth());
-            patient.setGender(patientDetails.getGender());
-            patient.setAddress(patientDetails.getAddress());
-            patient.setEmergencyContact(patientDetails.getEmergencyContact());
-            patient.setAllergies(patientDetails.getAllergies());
-            patient.setBloodGroup(patientDetails.getBloodGroup());
-            patient.setMedicalHistory(patientDetails.getMedicalHistory());
-            return patientRepository.save(patient);
-        }
-        throw new RuntimeException("Patient not found");
+        Patient patient = patientRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Patient not found with id: " + id));
+
+        patient.setUserId(patientDetails.getUserId());
+        patient.setPhoneNumber(patientDetails.getPhoneNumber());
+        patient.setDateOfBirth(patientDetails.getDateOfBirth());
+        patient.setGender(patientDetails.getGender());
+        patient.setAddress(patientDetails.getAddress());
+        patient.setEmergencyContact(patientDetails.getEmergencyContact());
+        patient.setAllergies(patientDetails.getAllergies());
+        patient.setBloodGroup(patientDetails.getBloodGroup());
+        patient.setMedicalHistory(patientDetails.getMedicalHistory());
+
+        return patientRepository.save(patient);
     }
 
     public void deletePatient(String id) {
+        if (!patientRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Patient not found with id: " + id);
+        }
         patientRepository.deleteById(id);
     }
 }

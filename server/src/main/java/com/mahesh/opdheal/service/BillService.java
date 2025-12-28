@@ -1,5 +1,6 @@
 package com.mahesh.opdheal.service;
 
+import com.mahesh.opdheal.exception.ResourceNotFoundException;
 import com.mahesh.opdheal.model.Bill;
 import com.mahesh.opdheal.repository.BillRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,23 +44,27 @@ public class BillService {
     }
 
     public Bill updateBill(String id, Bill billDetails) {
-        Optional<Bill> optionalBill = billRepository.findById(id);
-        if (optionalBill.isPresent()) {
-            Bill bill = optionalBill.get();
-            bill.setConsultationFee(billDetails.getConsultationFee());
-            bill.setMedicineFee(billDetails.getMedicineFee());
-            bill.setTotalAmount(bill.getConsultationFee().add(bill.getMedicineFee()));
-            bill.setStatus(billDetails.getStatus());
-            if (billDetails.getStatus() == Bill.Status.PAID) {
-                bill.setPaymentDate(LocalDateTime.now());
-            }
-            bill.setItems(billDetails.getItems());
-            return billRepository.save(bill);
+        Bill bill = billRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Bill not found with id: " + id));
+
+        bill.setPatientId(billDetails.getPatientId());
+        bill.setAppointmentId(billDetails.getAppointmentId());
+        bill.setConsultationFee(billDetails.getConsultationFee());
+        bill.setMedicineFee(billDetails.getMedicineFee());
+        bill.setTotalAmount(bill.getConsultationFee().add(bill.getMedicineFee()));
+        bill.setStatus(billDetails.getStatus());
+        if (billDetails.getStatus() == Bill.Status.PAID) {
+            bill.setPaymentDate(LocalDateTime.now());
         }
-        throw new RuntimeException("Bill not found");
+        bill.setItems(billDetails.getItems());
+
+        return billRepository.save(bill);
     }
 
     public void deleteBill(String id) {
+        if (!billRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Bill not found with id: " + id);
+        }
         billRepository.deleteById(id);
     }
 }

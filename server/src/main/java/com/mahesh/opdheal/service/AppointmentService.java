@@ -1,5 +1,6 @@
 package com.mahesh.opdheal.service;
 
+import com.mahesh.opdheal.exception.ResourceNotFoundException;
 import com.mahesh.opdheal.model.Appointment;
 import com.mahesh.opdheal.repository.AppointmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,19 +46,23 @@ public class AppointmentService {
     }
 
     public Appointment updateAppointment(String id, Appointment appointmentDetails) {
-        Optional<Appointment> optionalAppointment = appointmentRepository.findById(id);
-        if (optionalAppointment.isPresent()) {
-            Appointment appointment = optionalAppointment.get();
-            appointment.setAppointmentDateTime(appointmentDetails.getAppointmentDateTime());
-            appointment.setReason(appointmentDetails.getReason());
-            appointment.setStatus(appointmentDetails.getStatus());
-            appointment.setNotes(appointmentDetails.getNotes());
-            return appointmentRepository.save(appointment);
-        }
-        throw new RuntimeException("Appointment not found");
+        Appointment appointment = appointmentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Appointment not found with id: " + id));
+
+        appointment.setPatientId(appointmentDetails.getPatientId());
+        appointment.setDoctorId(appointmentDetails.getDoctorId());
+        appointment.setAppointmentDateTime(appointmentDetails.getAppointmentDateTime());
+        appointment.setReason(appointmentDetails.getReason());
+        appointment.setStatus(appointmentDetails.getStatus());
+        appointment.setNotes(appointmentDetails.getNotes());
+
+        return appointmentRepository.save(appointment);
     }
 
     public void deleteAppointment(String id) {
+        if (!appointmentRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Appointment not found with id: " + id);
+        }
         appointmentRepository.deleteById(id);
     }
 }

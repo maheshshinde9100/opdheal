@@ -2,6 +2,7 @@ package com.mahesh.opdheal.controller;
 
 import com.mahesh.opdheal.model.Bill;
 import com.mahesh.opdheal.service.BillService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,7 +19,7 @@ public class BillController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('DOCTOR')")
-    public ResponseEntity<Bill> createBill(@RequestBody Bill bill) {
+    public ResponseEntity<Bill> createBill(@Valid @RequestBody Bill bill) {
         return ResponseEntity.ok(billService.createBill(bill));
     }
 
@@ -29,7 +30,7 @@ public class BillController {
     }
 
     @GetMapping("/patient/{patientId}")
-    @PreAuthorize("hasRole('ADMIN') or @billService.getBillsByPatient(#patientId).contains(authentication.principal)")
+    @PreAuthorize("hasRole('ADMIN') or @customSecurityExpression.hasUserId(authentication, #patientId)")
     public ResponseEntity<List<Bill>> getBillsByPatient(@PathVariable String patientId) {
         return ResponseEntity.ok(billService.getBillsByPatient(patientId));
     }
@@ -56,12 +57,8 @@ public class BillController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Bill> updateBill(@PathVariable String id, @RequestBody Bill bill) {
-        try {
-            return ResponseEntity.ok(billService.updateBill(id, bill));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<Bill> updateBill(@PathVariable String id, @Valid @RequestBody Bill bill) {
+        return ResponseEntity.ok(billService.updateBill(id, bill));
     }
 
     @DeleteMapping("/{id}")

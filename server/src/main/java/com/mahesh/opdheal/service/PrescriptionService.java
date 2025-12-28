@@ -1,5 +1,6 @@
 package com.mahesh.opdheal.service;
 
+import com.mahesh.opdheal.exception.ResourceNotFoundException;
 import com.mahesh.opdheal.model.Prescription;
 import com.mahesh.opdheal.repository.PrescriptionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,18 +42,23 @@ public class PrescriptionService {
     }
 
     public Prescription updatePrescription(String id, Prescription prescriptionDetails) {
-        Optional<Prescription> optionalPrescription = prescriptionRepository.findById(id);
-        if (optionalPrescription.isPresent()) {
-            Prescription prescription = optionalPrescription.get();
-            prescription.setMedicines(prescriptionDetails.getMedicines());
-            prescription.setInstructions(prescriptionDetails.getInstructions());
-            prescription.setNotes(prescriptionDetails.getNotes());
-            return prescriptionRepository.save(prescription);
-        }
-        throw new RuntimeException("Prescription not found");
+        Prescription prescription = prescriptionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Prescription not found with id: " + id));
+
+        prescription.setPatientId(prescriptionDetails.getPatientId());
+        prescription.setDoctorId(prescriptionDetails.getDoctorId());
+        prescription.setAppointmentId(prescriptionDetails.getAppointmentId());
+        prescription.setMedicines(prescriptionDetails.getMedicines());
+        prescription.setInstructions(prescriptionDetails.getInstructions());
+        prescription.setNotes(prescriptionDetails.getNotes());
+
+        return prescriptionRepository.save(prescription);
     }
 
     public void deletePrescription(String id) {
+        if (!prescriptionRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Prescription not found with id: " + id);
+        }
         prescriptionRepository.deleteById(id);
     }
 }
