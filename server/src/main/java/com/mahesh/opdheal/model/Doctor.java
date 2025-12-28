@@ -33,4 +33,7 @@ public class Doctor {
 
     private String department;
     private boolean available = true;
+
+    private double averageRating = 0.0;
+    private int ratingCount = 0;
 }

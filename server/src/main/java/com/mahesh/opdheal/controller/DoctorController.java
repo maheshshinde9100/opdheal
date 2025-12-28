@@ -1,5 +1,6 @@
 package com.mahesh.opdheal.controller;
 
+import com.mahesh.opdheal.model.Appointment;
 import com.mahesh.opdheal.model.Doctor;
 import com.mahesh.opdheal.service.DoctorService;
 import jakarta.validation.Valid;
@@ -60,5 +61,11 @@ public class DoctorController {
     public ResponseEntity<Void> deleteDoctor(@PathVariable String id) {
         doctorService.deleteDoctor(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/appointments")
+    @PreAuthorize("hasRole('ADMIN') or @customSecurityExpression.hasUserId(authentication, #id)")
+    public ResponseEntity<List<Appointment>> getAppointmentsForDoctor(@PathVariable String id) {
+        return ResponseEntity.ok(doctorService.getAppointmentsForDoctor(id));
     }
 }

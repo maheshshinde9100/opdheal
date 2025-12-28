@@ -1,6 +1,8 @@
 package com.mahesh.opdheal.service;
 
 import com.mahesh.opdheal.exception.ResourceNotFoundException;
+import com.mahesh.opdheal.model.Appointment;
+import com.mahesh.opdheal.repository.AppointmentRepository;
 import com.mahesh.opdheal.model.Doctor;
 import com.mahesh.opdheal.repository.DoctorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,9 @@ public class DoctorService {
 
     @Autowired
     private DoctorRepository doctorRepository;
+
+    @Autowired
+    private AppointmentRepository appointmentRepository;
 
     public Doctor createDoctor(Doctor doctor) {
         return doctorRepository.save(doctor);
@@ -60,5 +65,9 @@ public class DoctorService {
             throw new ResourceNotFoundException("Doctor not found with id: " + id);
         }
         doctorRepository.deleteById(id);
+    }
+
+    public List<Appointment> getAppointmentsForDoctor(String doctorId) {
+        return appointmentRepository.findByDoctorId(doctorId);
     }
 }

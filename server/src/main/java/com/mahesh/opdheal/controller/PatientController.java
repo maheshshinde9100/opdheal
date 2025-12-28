@@ -1,5 +1,6 @@
 package com.mahesh.opdheal.controller;
 
+import com.mahesh.opdheal.dto.PatientHistoryDto;
 import com.mahesh.opdheal.model.Patient;
 import com.mahesh.opdheal.service.PatientService;
 import jakarta.validation.Valid;
@@ -48,5 +49,11 @@ public class PatientController {
     public ResponseEntity<Void> deletePatient(@PathVariable String id) {
         patientService.deletePatient(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/history")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('DOCTOR') or @customSecurityExpression.hasUserId(authentication, #id)")
+    public ResponseEntity<PatientHistoryDto> getPatientHistory(@PathVariable String id) {
+        return ResponseEntity.ok(patientService.getPatientHistory(id));
     }
 }

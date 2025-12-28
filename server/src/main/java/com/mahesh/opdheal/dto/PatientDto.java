@@ -1,0 +1,19 @@
+package com.mahesh.opdheal.dto;
+
+import lombok.Data;
+import java.time.LocalDate;
+import java.util.List;
+
+@Data
+public class PatientDto {
+    private String id;
+    private String userId;
+    private String phoneNumber;
+    private LocalDate dateOfBirth;
+    private String gender;
+    private String address;
+    private String emergencyContact;
+    private List<String> allergies;
+    private String bloodGroup;
+    private String medicalHistory;
+}

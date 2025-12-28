@@ -1,6 +1,15 @@
 package com.mahesh.opdheal.service;
 
+import com.mahesh.opdheal.dto.PatientDto;
+import com.mahesh.opdheal.dto.PatientHistoryDto;
 import com.mahesh.opdheal.exception.ResourceNotFoundException;
+import com.mahesh.opdheal.model.Appointment;
+import com.mahesh.opdheal.model.MedicalRecord;
+import com.mahesh.opdheal.model.Patient;
+import com.mahesh.opdheal.model.Prescription;
+import com.mahesh.opdheal.repository.AppointmentRepository;
+import com.mahesh.opdheal.repository.MedicalRecordRepository;
+import com.mahesh.opdheal.repository.PrescriptionRepository;
 import com.mahesh.opdheal.model.Patient;
 import com.mahesh.opdheal.repository.PatientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +23,12 @@ public class PatientService {
 
     @Autowired
     private PatientRepository patientRepository;
+    @Autowired
+    private AppointmentRepository appointmentRepository;
+    @Autowired
+    private PrescriptionRepository prescriptionRepository;
+    @Autowired
+    private MedicalRecordRepository medicalRecordRepository;
 
     public Patient createPatient(Patient patient) {
         return patientRepository.save(patient);
@@ -53,5 +68,39 @@ public class PatientService {
             throw new ResourceNotFoundException("Patient not found with id: " + id);
         }
         patientRepository.deleteById(id);
+    }
+
+    public PatientHistoryDto getPatientHistory(String patientId) {
+        Patient patient = patientRepository.findById(patientId)
+                .orElseThrow(() -> new ResourceNotFoundException("Patient not found with id: " + patientId));
+
+        List<Appointment> appointments = appointmentRepository.findByPatientId(patientId);
+        List<Prescription> prescriptions = prescriptionRepository.findByPatientId(patientId);
+        List<MedicalRecord> medicalRecords = medicalRecordRepository.findByPatientId(patientId);
+
+        PatientDto patientDto = toPatientDto(patient);
+
+        PatientHistoryDto historyDto = new PatientHistoryDto();
+        historyDto.setPatient(patientDto);
+        historyDto.setAppointments(appointments);
+        historyDto.setPrescriptions(prescriptions);
+        historyDto.setMedicalRecords(medicalRecords);
+
+        return historyDto;
+    }
+
+    private PatientDto toPatientDto(Patient patient) {
+        PatientDto dto = new PatientDto();
+        dto.setId(patient.getId());
+        dto.setUserId(patient.getUserId());
+        dto.setPhoneNumber(patient.getPhoneNumber());
+        dto.setDateOfBirth(patient.getDateOfBirth());
+        dto.setGender(patient.getGender());
+        dto.setAddress(patient.getAddress());
+        dto.setEmergencyContact(patient.getEmergencyContact());
+        dto.setAllergies(patient.getAllergies());
+        dto.setBloodGroup(patient.getBloodGroup());
+        dto.setMedicalHistory(patient.getMedicalHistory());
+        return dto;
     }
 }
