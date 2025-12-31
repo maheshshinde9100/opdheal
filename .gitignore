@@ -1,3 +1,5 @@
 server/src/main/resources/application.properties
 .vscode
 client/node_modules
+client/.env
+API_ENDPOINTS.md
