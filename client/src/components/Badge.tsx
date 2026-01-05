@@ -6,6 +6,7 @@ interface BadgeProps {
     variant?: 'primary' | 'success' | 'warning' | 'error' | 'auto';
     status?: string;
     size?: 'sm' | 'md' | 'lg';
+    className?: string;
 }
 
 export const Badge: React.FC<BadgeProps> = ({
@@ -13,6 +14,7 @@ export const Badge: React.FC<BadgeProps> = ({
     variant = 'primary',
     status,
     size = 'md',
+    className,
 }) => {
     const sizeClasses = {
         sm: 'text-xs px-2 py-0.5',
@@ -23,7 +25,7 @@ export const Badge: React.FC<BadgeProps> = ({
     const variantClass = status ? getStatusColor(status) : `badge-${variant}`;
 
     return (
-        <span className={`badge ${variantClass} ${sizeClasses[size]}`}>
+        <span className={`badge ${variantClass} ${sizeClasses[size]} ${className || ''}`}>
             {children}
         </span>
     );
