@@ -166,6 +166,7 @@ export interface DashboardStats {
     todayAppointments?: number;
     pendingBills?: number;
     revenue?: number;
+    totalRevenue?: number;
 }
 
 // API Error Response
