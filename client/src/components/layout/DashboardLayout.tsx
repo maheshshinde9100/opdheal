@@ -15,7 +15,7 @@ import {
     ChevronRight,
     Activity,
     Users,
-    Stethoscopes,
+    Stethoscope,
     HeartPulse
 } from 'lucide-react';
 import api from '../../services/api';
