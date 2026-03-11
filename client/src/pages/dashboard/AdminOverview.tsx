@@ -38,10 +38,10 @@ export const AdminOverview: React.FC = () => {
     }, []);
 
     const statCards = [
-        { label: 'Total Doctors', value: stats?.totalDoctors || '120', trend: '+12%', trendUp: true, icon: <Users size={30} className="text-primary-600" />, color: 'bg-primary-50' },
-        { label: 'Total Patients', value: stats?.totalPatients || '1,450', trend: '+18%', trendUp: true, icon: <Users size={30} className="text-success-600" />, color: 'bg-success-50' },
-        { label: 'Total Appointments', value: stats?.totalAppointments || '842', trend: '-3%', trendUp: false, icon: <Calendar size={30} className="text-warning-600" />, color: 'bg-warning-50' },
-        { label: 'Total Revenue', value: `$${stats?.totalRevenue || '45,200'}`, trend: '+24%', trendUp: true, icon: <CreditCard size={30} className="text-secondary-600" />, color: 'bg-secondary-50' },
+        { label: 'Total Doctors', value: stats?.totalDoctors ?? 0, trend: '+12%', trendUp: true, icon: <Users size={30} className="text-primary-600" />, color: 'bg-primary-50' },
+        { label: 'Total Patients', value: stats?.totalPatients ?? 0, trend: '+18%', trendUp: true, icon: <Users size={30} className="text-success-600" />, color: 'bg-success-50' },
+        { label: 'Total Appointments', value: stats?.totalAppointments ?? 0, trend: '-3%', trendUp: false, icon: <Calendar size={30} className="text-warning-600" />, color: 'bg-warning-50' },
+        { label: 'Total Revenue', value: `$${stats?.totalRevenue ?? 0}`, trend: '+24%', trendUp: true, icon: <CreditCard size={30} className="text-secondary-600" />, color: 'bg-secondary-50' },
     ];
 
     return (
