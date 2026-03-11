@@ -31,18 +31,18 @@ export const PatientOverview: React.FC = () => {
             try {
                 let apptsData: Appointment[] = [];
                 if (profileId) {
-                    apptsData = await api.getAppointmentsByPatient(Number(profileId));
+                    apptsData = await api.getAppointmentsByPatient(profileId);
                 } else {
                     apptsData = await api.getAllAppointments();
                 }
 
-                // Sort by date/time ascending
+                // Sort by appointmentDateTime ascending
                 const futureAppts = apptsData.filter(a => {
-                    const apptDate = a.appointmentDate ? new Date(a.appointmentDate) : new Date();
-                    return apptDate >= new Date(new Date().setHours(0, 0, 0, 0));
+                    const dt = a.appointmentDateTime ? new Date(a.appointmentDateTime) : null;
+                    return dt ? dt >= new Date(new Date().setHours(0, 0, 0, 0)) : false;
                 }).sort((a, b) => {
-                    const dateA = a.appointmentDate ? new Date(a.appointmentDate).getTime() : 0;
-                    const dateB = b.appointmentDate ? new Date(b.appointmentDate).getTime() : 0;
+                    const dateA = a.appointmentDateTime ? new Date(a.appointmentDateTime).getTime() : 0;
+                    const dateB = b.appointmentDateTime ? new Date(b.appointmentDateTime).getTime() : 0;
                     return dateA - dateB;
                 });
 
@@ -139,13 +139,13 @@ export const PatientOverview: React.FC = () => {
                                                         <div className="flex items-center gap-2 text-neutral-500 font-semibold text-sm">
                                                             <Badge variant="primary" className="text-[10px]">{appt.doctor?.specialization}</Badge>
                                                             <span>•</span>
-                                                            <span className="flex items-center gap-1"><Clock size={14} /> {formatTime(appt.appointmentTime)}</span>
+                                                            <span className="flex items-center gap-1"><Clock size={14} /> {appt.appointmentDateTime ? formatTime(appt.appointmentDateTime.split('T')[1]?.slice(0, 5) ?? '') : '—'}</span>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div className="flex items-center gap-3">
                                                     <div className="text-right hidden sm:block">
-                                                        <div className="text-sm font-bold text-neutral-900">{formatDate(appt.appointmentDate)}</div>
+                                                        <div className="text-sm font-bold text-neutral-900">{appt.appointmentDateTime ? formatDate(appt.appointmentDateTime.split('T')[0]) : '—'}</div>
                                                         <div className="text-xs font-semibold text-neutral-400 capitalize">{appt.status.toLowerCase()}</div>
                                                     </div>
                                                     <Button size="sm" className="bg-primary-50 text-primary-600 hover:bg-primary-100 border-none font-bold">

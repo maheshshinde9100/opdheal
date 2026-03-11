@@ -49,12 +49,12 @@ public class AppointmentService {
         Appointment appointment = appointmentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Appointment not found with id: " + id));
 
-        appointment.setPatientId(appointmentDetails.getPatientId());
-        appointment.setDoctorId(appointmentDetails.getDoctorId());
-        appointment.setAppointmentDateTime(appointmentDetails.getAppointmentDateTime());
-        appointment.setReason(appointmentDetails.getReason());
-        appointment.setStatus(appointmentDetails.getStatus());
-        appointment.setNotes(appointmentDetails.getNotes());
+        if (appointmentDetails.getPatientId() != null) appointment.setPatientId(appointmentDetails.getPatientId());
+        if (appointmentDetails.getDoctorId() != null) appointment.setDoctorId(appointmentDetails.getDoctorId());
+        if (appointmentDetails.getAppointmentDateTime() != null) appointment.setAppointmentDateTime(appointmentDetails.getAppointmentDateTime());
+        if (appointmentDetails.getReason() != null) appointment.setReason(appointmentDetails.getReason());
+        if (appointmentDetails.getStatus() != null) appointment.setStatus(appointmentDetails.getStatus());
+        if (appointmentDetails.getNotes() != null) appointment.setNotes(appointmentDetails.getNotes());
 
         return appointmentRepository.save(appointment);
     }

@@ -1,5 +1,6 @@
 // Date Formatting
-export const formatDate = (dateString: string): string => {
+export const formatDate = (dateString: string | undefined | null): string => {
+    if (!dateString) return '—';
     const date = new Date(dateString);
     return new Intl.DateFormat('en-IN', {
         year: 'numeric',
@@ -8,7 +9,8 @@ export const formatDate = (dateString: string): string => {
     }).format(date);
 };
 
-export const formatDateTime = (dateString: string): string => {
+export const formatDateTime = (dateString: string | undefined | null): string => {
+    if (!dateString) return '—';
     const date = new Date(dateString);
     return new Intl.DateFormat('en-IN', {
         year: 'numeric',
@@ -19,7 +21,8 @@ export const formatDateTime = (dateString: string): string => {
     }).format(date);
 };
 
-export const formatTime = (timeString: string): string => {
+export const formatTime = (timeString: string | undefined | null): string => {
+    if (!timeString) return '—';
     const [hours, minutes] = timeString.split(':');
     const hour = parseInt(hours, 10);
     const ampm = hour >= 12 ? 'PM' : 'AM';

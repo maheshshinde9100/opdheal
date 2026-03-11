@@ -118,8 +118,8 @@ export const AdminAppointments: React.FC = () => {
                                                 <div className="text-xs font-medium text-neutral-400">{app.reasonForVisit}</div>
                                             </td>
                                             <td className="px-8 py-6">
-                                                <div className="text-sm font-black text-neutral-600 dark:text-neutral-400">{formatDate(app.appointmentDate)}</div>
-                                                <div className="text-xs font-bold text-primary-500">{formatTime(app.appointmentTime)}</div>
+                                                <div className="text-sm font-black text-neutral-600 dark:text-neutral-400">{app.appointmentDateTime ? formatDate(app.appointmentDateTime.split('T')[0]) : '—'}</div>
+                                                <div className="text-xs font-bold text-primary-500">{app.appointmentDateTime ? formatTime(app.appointmentDateTime.split('T')[1]?.slice(0, 5) ?? '') : '—'}</div>
                                             </td>
                                             <td className="px-8 py-6">
                                                 <Badge status={app.status} className="font-black text-[9px] tracking-widest uppercase py-1 px-3">

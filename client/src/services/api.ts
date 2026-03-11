@@ -57,7 +57,6 @@ class ApiService {
         });
         const data = await this.handleResponse<AuthResponse>(response);
 
-        // Store token
         if (data.token) {
             localStorage.setItem('token', data.token);
             localStorage.setItem('username', data.username);
@@ -110,14 +109,14 @@ class ApiService {
         return this.handleResponse<User[]>(response);
     }
 
-    async getUserById(id: number): Promise<User> {
+    async getUserById(id: string): Promise<User> {
         const response = await fetch(`${API_BASE_URL}/api/users/${id}`, {
             headers: this.getHeaders(),
         });
         return this.handleResponse<User>(response);
     }
 
-    async updateUser(id: number, user: Partial<User>): Promise<User> {
+    async updateUser(id: string, user: Partial<User>): Promise<User> {
         const response = await fetch(`${API_BASE_URL}/api/users/${id}`, {
             method: 'PUT',
             headers: this.getHeaders(),
@@ -126,7 +125,7 @@ class ApiService {
         return this.handleResponse<User>(response);
     }
 
-    async deleteUser(id: number): Promise<void> {
+    async deleteUser(id: string): Promise<void> {
         const response = await fetch(`${API_BASE_URL}/api/users/${id}`, {
             method: 'DELETE',
             headers: this.getHeaders(),
@@ -142,7 +141,7 @@ class ApiService {
         return this.handleResponse<Patient[]>(response);
     }
 
-    async getPatientById(id: number): Promise<Patient> {
+    async getPatientById(id: string): Promise<Patient> {
         const response = await fetch(`${API_BASE_URL}/api/patients/${id}`, {
             headers: this.getHeaders(),
         });
@@ -158,7 +157,7 @@ class ApiService {
         return this.handleResponse<Patient>(response);
     }
 
-    async updatePatient(id: number, patient: Partial<Patient>): Promise<Patient> {
+    async updatePatient(id: string, patient: Partial<Patient>): Promise<Patient> {
         const response = await fetch(`${API_BASE_URL}/api/patients/${id}`, {
             method: 'PUT',
             headers: this.getHeaders(),
@@ -167,7 +166,7 @@ class ApiService {
         return this.handleResponse<Patient>(response);
     }
 
-    async deletePatient(id: number): Promise<void> {
+    async deletePatient(id: string): Promise<void> {
         const response = await fetch(`${API_BASE_URL}/api/patients/${id}`, {
             method: 'DELETE',
             headers: this.getHeaders(),
@@ -175,7 +174,7 @@ class ApiService {
         return this.handleResponse<void>(response);
     }
 
-    async getPatientHistory(id: number): Promise<PatientHistoryDto> {
+    async getPatientHistory(id: string): Promise<PatientHistoryDto> {
         const response = await fetch(`${API_BASE_URL}/api/patients/${id}/history`, {
             headers: this.getHeaders(),
         });
@@ -204,7 +203,7 @@ class ApiService {
         return this.handleResponse<Doctor[]>(response);
     }
 
-    async getDoctorById(id: number): Promise<Doctor> {
+    async getDoctorById(id: string): Promise<Doctor> {
         const response = await fetch(`${API_BASE_URL}/api/doctors/${id}`, {
             headers: this.getHeaders(),
         });
@@ -220,7 +219,7 @@ class ApiService {
         return this.handleResponse<Doctor>(response);
     }
 
-    async updateDoctor(id: number, doctor: Partial<Doctor>): Promise<Doctor> {
+    async updateDoctor(id: string, doctor: Partial<Doctor>): Promise<Doctor> {
         const response = await fetch(`${API_BASE_URL}/api/doctors/${id}`, {
             method: 'PUT',
             headers: this.getHeaders(),
@@ -229,7 +228,7 @@ class ApiService {
         return this.handleResponse<Doctor>(response);
     }
 
-    async deleteDoctor(id: number): Promise<void> {
+    async deleteDoctor(id: string): Promise<void> {
         const response = await fetch(`${API_BASE_URL}/api/doctors/${id}`, {
             method: 'DELETE',
             headers: this.getHeaders(),
@@ -237,8 +236,8 @@ class ApiService {
         return this.handleResponse<void>(response);
     }
 
-    async getDoctorAppointments(id: number): Promise<Appointment[]> {
-        const response = await fetch(`${API_BASE_URL}/api/doctors/${id}/appointments`, {
+    async getDoctorAppointments(id: string): Promise<Appointment[]> {
+        const response = await fetch(`${API_BASE_URL}/api/appointments/doctor/${id}`, {
             headers: this.getHeaders(),
         });
         return this.handleResponse<Appointment[]>(response);
@@ -252,14 +251,14 @@ class ApiService {
         return this.handleResponse<Appointment[]>(response);
     }
 
-    async getAppointmentsByPatient(patientId: number): Promise<Appointment[]> {
+    async getAppointmentsByPatient(patientId: string): Promise<Appointment[]> {
         const response = await fetch(`${API_BASE_URL}/api/appointments/patient/${patientId}`, {
             headers: this.getHeaders(),
         });
         return this.handleResponse<Appointment[]>(response);
     }
 
-    async getAppointmentsByDoctor(doctorId: number): Promise<Appointment[]> {
+    async getAppointmentsByDoctor(doctorId: string): Promise<Appointment[]> {
         const response = await fetch(`${API_BASE_URL}/api/appointments/doctor/${doctorId}`, {
             headers: this.getHeaders(),
         });
@@ -283,7 +282,7 @@ class ApiService {
         return this.handleResponse<Appointment[]>(response);
     }
 
-    async getAppointmentById(id: number): Promise<Appointment> {
+    async getAppointmentById(id: string): Promise<Appointment> {
         const response = await fetch(`${API_BASE_URL}/api/appointments/${id}`, {
             headers: this.getHeaders(),
         });
@@ -299,7 +298,7 @@ class ApiService {
         return this.handleResponse<Appointment>(response);
     }
 
-    async updateAppointment(id: number, appointment: Partial<Appointment>): Promise<Appointment> {
+    async updateAppointment(id: string, appointment: Partial<Appointment>): Promise<Appointment> {
         const response = await fetch(`${API_BASE_URL}/api/appointments/${id}`, {
             method: 'PUT',
             headers: this.getHeaders(),
@@ -308,7 +307,7 @@ class ApiService {
         return this.handleResponse<Appointment>(response);
     }
 
-    async deleteAppointment(id: number): Promise<void> {
+    async deleteAppointment(id: string): Promise<void> {
         const response = await fetch(`${API_BASE_URL}/api/appointments/${id}`, {
             method: 'DELETE',
             headers: this.getHeaders(),
@@ -324,28 +323,28 @@ class ApiService {
         return this.handleResponse<MedicalRecord[]>(response);
     }
 
-    async getMedicalRecordsByPatient(patientId: number): Promise<MedicalRecord[]> {
+    async getMedicalRecordsByPatient(patientId: string): Promise<MedicalRecord[]> {
         const response = await fetch(`${API_BASE_URL}/api/medical-records/patient/${patientId}`, {
             headers: this.getHeaders(),
         });
         return this.handleResponse<MedicalRecord[]>(response);
     }
 
-    async getMedicalRecordsByDoctor(doctorId: number): Promise<MedicalRecord[]> {
+    async getMedicalRecordsByDoctor(doctorId: string): Promise<MedicalRecord[]> {
         const response = await fetch(`${API_BASE_URL}/api/medical-records/doctor/${doctorId}`, {
             headers: this.getHeaders(),
         });
         return this.handleResponse<MedicalRecord[]>(response);
     }
 
-    async getMedicalRecordsByAppointment(appointmentId: number): Promise<MedicalRecord[]> {
+    async getMedicalRecordsByAppointment(appointmentId: string): Promise<MedicalRecord[]> {
         const response = await fetch(`${API_BASE_URL}/api/medical-records/appointment/${appointmentId}`, {
             headers: this.getHeaders(),
         });
         return this.handleResponse<MedicalRecord[]>(response);
     }
 
-    async getMedicalRecordById(id: number): Promise<MedicalRecord> {
+    async getMedicalRecordById(id: string): Promise<MedicalRecord> {
         const response = await fetch(`${API_BASE_URL}/api/medical-records/${id}`, {
             headers: this.getHeaders(),
         });
@@ -361,7 +360,7 @@ class ApiService {
         return this.handleResponse<MedicalRecord>(response);
     }
 
-    async updateMedicalRecord(id: number, record: Partial<MedicalRecord>): Promise<MedicalRecord> {
+    async updateMedicalRecord(id: string, record: Partial<MedicalRecord>): Promise<MedicalRecord> {
         const response = await fetch(`${API_BASE_URL}/api/medical-records/${id}`, {
             method: 'PUT',
             headers: this.getHeaders(),
@@ -370,7 +369,7 @@ class ApiService {
         return this.handleResponse<MedicalRecord>(response);
     }
 
-    async deleteMedicalRecord(id: number): Promise<void> {
+    async deleteMedicalRecord(id: string): Promise<void> {
         const response = await fetch(`${API_BASE_URL}/api/medical-records/${id}`, {
             method: 'DELETE',
             headers: this.getHeaders(),
@@ -386,28 +385,28 @@ class ApiService {
         return this.handleResponse<Prescription[]>(response);
     }
 
-    async getPrescriptionsByPatient(patientId: number): Promise<Prescription[]> {
+    async getPrescriptionsByPatient(patientId: string): Promise<Prescription[]> {
         const response = await fetch(`${API_BASE_URL}/api/prescriptions/patient/${patientId}`, {
             headers: this.getHeaders(),
         });
         return this.handleResponse<Prescription[]>(response);
     }
 
-    async getPrescriptionsByDoctor(doctorId: number): Promise<Prescription[]> {
+    async getPrescriptionsByDoctor(doctorId: string): Promise<Prescription[]> {
         const response = await fetch(`${API_BASE_URL}/api/prescriptions/doctor/${doctorId}`, {
             headers: this.getHeaders(),
         });
         return this.handleResponse<Prescription[]>(response);
     }
 
-    async getPrescriptionsByAppointment(appointmentId: number): Promise<Prescription[]> {
+    async getPrescriptionsByAppointment(appointmentId: string): Promise<Prescription[]> {
         const response = await fetch(`${API_BASE_URL}/api/prescriptions/appointment/${appointmentId}`, {
             headers: this.getHeaders(),
         });
         return this.handleResponse<Prescription[]>(response);
     }
 
-    async getPrescriptionById(id: number): Promise<Prescription> {
+    async getPrescriptionById(id: string): Promise<Prescription> {
         const response = await fetch(`${API_BASE_URL}/api/prescriptions/${id}`, {
             headers: this.getHeaders(),
         });
@@ -423,7 +422,7 @@ class ApiService {
         return this.handleResponse<Prescription>(response);
     }
 
-    async updatePrescription(id: number, prescription: Partial<Prescription>): Promise<Prescription> {
+    async updatePrescription(id: string, prescription: Partial<Prescription>): Promise<Prescription> {
         const response = await fetch(`${API_BASE_URL}/api/prescriptions/${id}`, {
             method: 'PUT',
             headers: this.getHeaders(),
@@ -432,7 +431,7 @@ class ApiService {
         return this.handleResponse<Prescription>(response);
     }
 
-    async deletePrescription(id: number): Promise<void> {
+    async deletePrescription(id: string): Promise<void> {
         const response = await fetch(`${API_BASE_URL}/api/prescriptions/${id}`, {
             method: 'DELETE',
             headers: this.getHeaders(),
@@ -448,14 +447,14 @@ class ApiService {
         return this.handleResponse<Bill[]>(response);
     }
 
-    async getBillsByPatient(patientId: number): Promise<Bill[]> {
+    async getBillsByPatient(patientId: string): Promise<Bill[]> {
         const response = await fetch(`${API_BASE_URL}/api/bills/patient/${patientId}`, {
             headers: this.getHeaders(),
         });
         return this.handleResponse<Bill[]>(response);
     }
 
-    async getBillsByAppointment(appointmentId: number): Promise<Bill[]> {
+    async getBillsByAppointment(appointmentId: string): Promise<Bill[]> {
         const response = await fetch(`${API_BASE_URL}/api/bills/appointment/${appointmentId}`, {
             headers: this.getHeaders(),
         });
@@ -469,7 +468,7 @@ class ApiService {
         return this.handleResponse<Bill[]>(response);
     }
 
-    async getBillById(id: number): Promise<Bill> {
+    async getBillById(id: string): Promise<Bill> {
         const response = await fetch(`${API_BASE_URL}/api/bills/${id}`, {
             headers: this.getHeaders(),
         });
@@ -485,7 +484,7 @@ class ApiService {
         return this.handleResponse<Bill>(response);
     }
 
-    async updateBill(id: number, bill: Partial<Bill>): Promise<Bill> {
+    async updateBill(id: string, bill: Partial<Bill>): Promise<Bill> {
         const response = await fetch(`${API_BASE_URL}/api/bills/${id}`, {
             method: 'PUT',
             headers: this.getHeaders(),
@@ -494,7 +493,7 @@ class ApiService {
         return this.handleResponse<Bill>(response);
     }
 
-    async deleteBill(id: number): Promise<void> {
+    async deleteBill(id: string): Promise<void> {
         const response = await fetch(`${API_BASE_URL}/api/bills/${id}`, {
             method: 'DELETE',
             headers: this.getHeaders(),
@@ -512,7 +511,7 @@ class ApiService {
         return this.handleResponse<Review>(response);
     }
 
-    async getReviewsForDoctor(doctorId: number): Promise<Review[]> {
+    async getReviewsForDoctor(doctorId: string): Promise<Review[]> {
         const response = await fetch(`${API_BASE_URL}/api/reviews/doctor/${doctorId}`, {
             headers: this.getHeaders(false),
         });
@@ -522,7 +521,7 @@ class ApiService {
     // Dashboard API
     async getDashboardStats(): Promise<DashboardStats> {
         const response = await fetch(`${API_BASE_URL}/api/dashboard/stats`, {
-            headers: this.getHeaders(false),
+            headers: this.getHeaders(),
         });
         return this.handleResponse<DashboardStats>(response);
     }

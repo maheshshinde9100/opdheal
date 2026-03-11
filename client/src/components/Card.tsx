@@ -1,11 +1,10 @@
 import React from 'react';
 import { cn } from '../utils/helpers';
 
-interface CardProps {
+interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
     children: React.ReactNode;
     className?: string;
     hoverable?: boolean;
-    onClick?: () => void;
     style?: React.CSSProperties;
 }
 
@@ -15,6 +14,7 @@ export const Card: React.FC<CardProps> = ({
     hoverable = false,
     onClick,
     style,
+    ...rest
 }) => {
     return (
         <div
@@ -26,6 +26,7 @@ export const Card: React.FC<CardProps> = ({
             )}
             onClick={onClick}
             style={style}
+            {...rest}
         >
             {children}
         </div>
