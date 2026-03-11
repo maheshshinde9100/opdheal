@@ -22,22 +22,48 @@ import type { Appointment } from '../../types';
 
 export const PatientOverview: React.FC = () => {
     const [appointments, setAppointments] = useState<Appointment[]>([]);
+    const [nextAppt, setNextAppt] = useState<Appointment | null>(null);
     const username = api.getUsername();
+    const profileId = api.getProfileId();
 
     useEffect(() => {
         const loadData = async () => {
             try {
-                const apptsData = await api.getAllAppointments();
-                setAppointments(apptsData.slice(0, 5));
+                let apptsData: Appointment[] = [];
+                if (profileId) {
+                    apptsData = await api.getAppointmentsByPatient(Number(profileId));
+                } else {
+                    apptsData = await api.getAllAppointments();
+                }
+
+                // Sort by date/time ascending
+                const futureAppts = apptsData.filter(a => {
+                    const apptDate = a.appointmentDate ? new Date(a.appointmentDate) : new Date();
+                    return apptDate >= new Date(new Date().setHours(0, 0, 0, 0));
+                }).sort((a, b) => {
+                    const dateA = a.appointmentDate ? new Date(a.appointmentDate).getTime() : 0;
+                    const dateB = b.appointmentDate ? new Date(b.appointmentDate).getTime() : 0;
+                    return dateA - dateB;
+                });
+
+                setAppointments(futureAppts.slice(0, 5));
+                if (futureAppts.length > 0) {
+                    setNextAppt(futureAppts[0]);
+                }
             } catch (error) {
                 console.error("Failed to load patient dashboard", error);
             }
         };
         loadData();
-    }, []);
+    }, [profileId]);
 
     const statCards = [
-        { label: 'Next Appointment', value: 'Today, 2:30 PM', subValue: 'Dr. Sarah Wilson', icon: <Calendar className="text-primary-600" />, color: 'bg-primary-50' },
+        {
+            label: 'Next Appointment',
+            value: nextAppt ? formatDate(nextAppt.appointmentDate || '') : 'None',
+            subValue: nextAppt?.doctor?.user ? `Dr. ${nextAppt.doctor.user.firstName}` : 'No upcoming',
+            icon: <Calendar className="text-primary-600" />, color: 'bg-primary-50'
+        },
         { label: 'Pending Bills', value: '$250.00', subValue: '2 overdue payments', icon: <CreditCard className="text-error-600" />, color: 'bg-error-50' },
         { label: 'Active Prescriptions', value: '4 Drugs', subValue: 'Renew in 5 days', icon: <Pill className="text-success-600" />, color: 'bg-success-50' },
         { label: 'Health Score', value: '88%', subValue: 'Excellent condition', icon: <Activity className="text-warning-600" />, color: 'bg-warning-50' },

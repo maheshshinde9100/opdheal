@@ -16,6 +16,8 @@ import { Input } from '../../components/Input';
 import api from '../../services/api';
 import { formatDate } from '../../utils/helpers';
 import type { Prescription } from '../../types';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 export const PatientPrescriptions: React.FC = () => {
     const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
@@ -41,6 +43,25 @@ export const PatientPrescriptions: React.FC = () => {
         p.medicationName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         p.doctor?.user?.firstName?.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    const handleDownload = async (prescription: Prescription, elementId: string) => {
+        const element = document.getElementById(elementId);
+        if (!element) return;
+
+        try {
+            const canvas = await html2canvas(element, { scale: 2, backgroundColor: '#ffffff' });
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const pdfWidth = 210; // A4 width in mm
+            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+            pdf.text(`OpdHeal - Digital Prescription - ID: ${prescription.id}`, 10, 10);
+            pdf.addImage(imgData, 'PNG', 10, 20, pdfWidth - 20, pdfHeight - 20);
+            pdf.save(`Prescription_${prescription.medicationName}_${formatDate(prescription.prescriptionDate)}.pdf`);
+        } catch (error) {
+            console.error('Error generating PDF', error);
+        }
+    };
 
     return (
         <DashboardLayout role="PATIENT">
@@ -113,7 +134,7 @@ export const PatientPrescriptions: React.FC = () => {
                         <div className="col-span-full text-center py-20 font-bold text-neutral-400">Loading prescriptions...</div>
                     ) : filteredPrescriptions.length > 0 ? (
                         filteredPrescriptions.map((p) => (
-                            <Card key={p.id} className="p-0 overflow-hidden border-neutral-100 hover:border-primary-200 transition-all group flex flex-col">
+                            <Card key={p.id} id={`prescription-card-${p.id}`} className="p-0 overflow-hidden border-neutral-100 hover:border-primary-200 transition-all group flex flex-col">
                                 <div className="p-6 flex-1 flex flex-col justify-between">
                                     <div className="flex items-start justify-between mb-6">
                                         <div className="flex items-center gap-4">
@@ -129,7 +150,13 @@ export const PatientPrescriptions: React.FC = () => {
                                                 </p>
                                             </div>
                                         </div>
-                                        <Button variant="outline" size="sm" className="h-10 w-10 p-0 border-neutral-200 rounded-xl">
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            className="h-10 w-10 p-0 border-neutral-200 rounded-xl"
+                                            onClick={() => handleDownload(p, `prescription-card-${p.id}`)}
+                                            title="Download PDF"
+                                        >
                                             <Download size={18} />
                                         </Button>
                                     </div>

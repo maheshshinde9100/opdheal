@@ -4,6 +4,8 @@ import com.mahesh.opdheal.dto.AuthRequest;
 import com.mahesh.opdheal.dto.AuthResponse;
 import com.mahesh.opdheal.dto.RegisterRequest;
 import com.mahesh.opdheal.model.User;
+import com.mahesh.opdheal.repository.DoctorRepository;
+import com.mahesh.opdheal.repository.PatientRepository;
 import com.mahesh.opdheal.service.UserService;
 import com.mahesh.opdheal.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,12 @@ public class AuthController {
     private UserService userService;
 
     @Autowired
+    private PatientRepository patientRepository;
+
+    @Autowired
+    private DoctorRepository doctorRepository;
+
+    @Autowired
     private JwtUtil jwtUtil;
 
     @PostMapping("/login")
@@ -36,7 +44,17 @@ public class AuthController {
         String jwt = jwtUtil.generateToken(authentication);
 
         User user = userService.findByUsername(authRequest.getUsername()).orElseThrow();
-        return ResponseEntity.ok(new AuthResponse(jwt, user.getUsername(), user.getRole().name()));
+        
+        String profileId = null;
+        if (user.getRole() == User.Role.PATIENT) {
+            profileId = patientRepository.findByUserId(user.getId())
+                    .map(com.mahesh.opdheal.model.Patient::getId).orElse(null);
+        } else if (user.getRole() == User.Role.DOCTOR) {
+            profileId = doctorRepository.findByUserId(user.getId())
+                    .map(com.mahesh.opdheal.model.Doctor::getId).orElse(null);
+        }
+
+        return ResponseEntity.ok(new AuthResponse(jwt, user.getUsername(), user.getRole().name(), profileId));
     }
 
     @PostMapping("/register")
