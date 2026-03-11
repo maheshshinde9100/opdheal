@@ -62,6 +62,9 @@ class ApiService {
             localStorage.setItem('token', data.token);
             localStorage.setItem('username', data.username);
             localStorage.setItem('role', data.role);
+            if (data.profileId) {
+                localStorage.setItem('profileId', data.profileId);
+            }
         }
 
         return data;
@@ -80,6 +83,7 @@ class ApiService {
         localStorage.removeItem('token');
         localStorage.removeItem('username');
         localStorage.removeItem('role');
+        localStorage.removeItem('profileId');
     }
 
     isAuthenticated(): boolean {
@@ -92,6 +96,10 @@ class ApiService {
 
     getUsername(): string | null {
         return localStorage.getItem('username');
+    }
+
+    getProfileId(): string | null {
+        return localStorage.getItem('profileId');
     }
 
     // User API

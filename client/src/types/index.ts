@@ -29,6 +29,7 @@ export interface AuthResponse {
     type: string;
     username: string;
     role: 'ADMIN' | 'DOCTOR' | 'PATIENT';
+    profileId?: string;
 }
 
 // Patient Types

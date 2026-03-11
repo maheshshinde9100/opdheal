@@ -18,25 +18,33 @@ import type { Appointment } from '../../types';
 
 export const DoctorOverview: React.FC = () => {
     const [appointments, setAppointments] = useState<Appointment[]>([]);
+    const [todayCount, setTodayCount] = useState<number>(0);
     const username = api.getUsername();
+    const profileId = api.getProfileId();
 
     useEffect(() => {
         const loadData = async () => {
             try {
-                // Fetch actual data
-                const [allAppts] = await Promise.all([
-                    api.getAllAppointments(), // Ideally filter by doctor ID in backend
-                ]);
-                setAppointments(allAppts.slice(0, 5));
+                if (profileId) {
+                    const allAppts = await api.getDoctorAppointments(Number(profileId));
+                    setAppointments(allAppts.slice(0, 5));
+
+                    const todayDateString = new Date().toISOString().split('T')[0];
+                    const count = allAppts.filter(a => a.appointmentDate?.startsWith(todayDateString)).length;
+                    setTodayCount(count);
+                } else {
+                    const allAppts = await api.getAllAppointments();
+                    setAppointments(allAppts.slice(0, 5));
+                }
             } catch (error) {
                 console.error("Failed to load doctor dashboard", error);
             }
         };
         loadData();
-    }, []);
+    }, [profileId]);
 
     const statCards = [
-        { label: 'Today Appointments', value: '12', subValue: '4 completed', icon: <Calendar className="text-primary-600" />, color: 'bg-primary-50', trend: '+15%' },
+        { label: 'Today Appointments', value: todayCount.toString(), subValue: 'Pending completion', icon: <Calendar className="text-primary-600" />, color: 'bg-primary-50', trend: 'Active' },
         { label: 'New Patients', value: '5', subValue: 'Since yesterday', icon: <Users className="text-success-600" />, color: 'bg-success-50', trend: '+10%' },
         { label: 'Patient Satisfaction', value: '4.9', subValue: 'Out of 5 stars', icon: <Star className="text-warning-600" />, color: 'bg-warning-50', trend: 'High' },
         { label: 'Pending Reports', value: '8', subValue: 'Requires review', icon: <AlertCircle className="text-error-600" />, color: 'bg-error-50', trend: 'Action' },
@@ -51,7 +59,7 @@ export const DoctorOverview: React.FC = () => {
                         <h1 className="text-4xl font-extrabold text-neutral-900 tracking-tight">
                             Good Morning, <span className="text-primary-600">Dr. {username}</span>
                         </h1>
-                        <p className="text-lg text-neutral-500 font-medium">You have 12 appointments scheduled for today.</p>
+                        <p className="text-lg text-neutral-500 font-medium">You have {todayCount} appointments scheduled for today.</p>
                     </div>
                     <div className="flex items-center gap-3">
                         <Button className="bg-white text-neutral-900 border-2 border-neutral-200">
