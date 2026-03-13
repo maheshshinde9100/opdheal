@@ -10,8 +10,8 @@ import com.mahesh.opdheal.model.Prescription;
 import com.mahesh.opdheal.repository.AppointmentRepository;
 import com.mahesh.opdheal.repository.MedicalRecordRepository;
 import com.mahesh.opdheal.repository.PrescriptionRepository;
-import com.mahesh.opdheal.model.Patient;
 import com.mahesh.opdheal.repository.PatientRepository;
+import com.mahesh.opdheal.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,21 +29,23 @@ public class PatientService {
     private PrescriptionRepository prescriptionRepository;
     @Autowired
     private MedicalRecordRepository medicalRecordRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     public Patient createPatient(Patient patient) {
         return patientRepository.save(patient);
     }
 
-    public List<Patient> getAllPatients() {
-        return patientRepository.findAll();
+    public List<PatientDto> getAllPatients() {
+        return patientRepository.findAll().stream().map(this::toPatientDto).toList();
     }
 
-    public Optional<Patient> getPatientById(String id) {
-        return patientRepository.findById(id);
+    public Optional<PatientDto> getPatientById(String id) {
+        return patientRepository.findById(id).map(this::toPatientDto);
     }
 
-    public Optional<Patient> getPatientByUserId(String userId) {
-        return patientRepository.findByUserId(userId);
+    public Optional<PatientDto> getPatientByUserId(String userId) {
+        return patientRepository.findByUserId(userId).map(this::toPatientDto);
     }
 
     public Patient updatePatient(String id, Patient patientDetails) {
@@ -58,6 +60,7 @@ public class PatientService {
         patient.setEmergencyContact(patientDetails.getEmergencyContact());
         patient.setAllergies(patientDetails.getAllergies());
         patient.setBloodGroup(patientDetails.getBloodGroup());
+        patient.setWeight(patientDetails.getWeight());
         patient.setMedicalHistory(patientDetails.getMedicalHistory());
 
         return patientRepository.save(patient);
@@ -100,7 +103,15 @@ public class PatientService {
         dto.setEmergencyContact(patient.getEmergencyContact());
         dto.setAllergies(patient.getAllergies());
         dto.setBloodGroup(patient.getBloodGroup());
+        dto.setWeight(patient.getWeight());
         dto.setMedicalHistory(patient.getMedicalHistory());
+
+        userRepository.findById(patient.getUserId()).ifPresent(u -> {
+            dto.setFirstName(u.getFirstName());
+            dto.setLastName(u.getLastName());
+            dto.setEmail(u.getEmail());
+        });
+
         return dto;
     }
 }

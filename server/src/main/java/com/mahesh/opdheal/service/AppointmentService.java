@@ -69,6 +69,10 @@ public class AppointmentService {
         return appointmentRepository.findById(id);
     }
 
+    public Optional<AppointmentDto> getAppointmentDtoById(String id) {
+        return appointmentRepository.findById(id).map(this::toDto);
+    }
+
     public List<AppointmentDto> getAppointmentsByPatient(String patientId) {
         return appointmentRepository.findByPatientId(patientId).stream()
                 .map(this::toDto)

@@ -60,8 +60,8 @@ public class AppointmentController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('DOCTOR') or hasRole('PATIENT')")
-    public ResponseEntity<Appointment> getAppointmentById(@PathVariable String id) {
-        return appointmentService.getAppointmentById(id)
+    public ResponseEntity<AppointmentDto> getAppointmentById(@PathVariable String id) {
+        return appointmentService.getAppointmentDtoById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
