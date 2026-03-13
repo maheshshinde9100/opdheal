@@ -57,10 +57,10 @@ export const PatientDashboard: React.FC = () => {
     }
 
     const quickActions = [
-        { icon: <Calendar />, label: 'Book Appointment', color: 'from-blue-500 to-cyan-500' },
-        { icon: <FileText />, label: 'Medical Records', color: 'from-purple-500 to-pink-500' },
-        { icon: <Pill />, label: 'Prescriptions', color: 'from-green-500 to-emerald-500' },
-        { icon: <Wallet />, label: 'Bills & Payments', color: 'from-orange-500 to-red-500' },
+        { icon: <Calendar />, label: 'Schedule Appointment', color: 'from-blue-500 to-blue-600' },
+        { icon: <FileText />, label: 'Medical Records', color: 'from-slate-500 to-slate-600' },
+        { icon: <Pill />, label: 'Prescriptions', color: 'from-blue-600 to-blue-700' },
+        { icon: <Wallet />, label: 'Billing & Invoices', color: 'from-slate-600 to-slate-700' },
     ];
 
     return (
@@ -78,22 +78,22 @@ export const PatientDashboard: React.FC = () => {
                             <div className="relative">
                                 <input
                                     type="text"
-                                    placeholder="Search..."
-                                    className="pl-10 pr-4 py-2 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    placeholder="Search records..."
+                                    className="pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 text-sm font-medium"
                                 />
-                                <Search className="w-5 h-5 text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                             </div>
-                            <button className="relative p-2 hover:bg-neutral-100 rounded-lg transition-colors">
-                                <Bell className="w-6 h-6 text-neutral-600" />
-                                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                            <button className="relative p-2 hover:bg-slate-100 rounded-lg transition-colors">
+                                <Bell className="w-5 h-5 text-slate-600" />
+                                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full"></span>
                             </button>
-                            <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-3 border-l border-slate-200 pl-4">
                                 <div className="text-right">
-                                    <p className="font-semibold text-neutral-900">{username}</p>
-                                    <p className="text-xs text-neutral-500">Patient</p>
+                                    <p className="font-semibold text-slate-900 text-sm">{username}</p>
+                                    <p className="text-xs text-slate-500 font-medium">Patient</p>
                                 </div>
-                                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                                    <User className="w-6 h-6 text-white" />
+                                <div className="w-10 h-10 bg-blue-50 border border-blue-100 rounded-full flex items-center justify-center">
+                                    <User className="w-5 h-5 text-blue-600" />
                                 </div>
                             </div>
                         </div>
@@ -104,19 +104,19 @@ export const PatientDashboard: React.FC = () => {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Welcome Section */}
                 <div className="mb-8 animate-slide-down">
-                    <h1 className="text-4xl font-bold text-neutral-900 mb-2">
-                        Welcome back, {username}!
+                    <h1 className="text-3xl font-bold text-slate-900 mb-2 tracking-tight">
+                        Patient Dashboard
                     </h1>
-                    <p className="text-lg text-neutral-600">Here's what's happening with your health today</p>
+                    <p className="text-base text-slate-600 font-medium">Welcome, {username}. Manage your clinical records and appointments.</p>
                 </div>
 
                 {/* Stats Grid */}
                 <div className="grid md:grid-cols-4 gap-6 mb-8">
                     {[
-                        { label: 'Total Appointments', value: appointments.length, icon: <Calendar />, color: 'from-blue-500 to-cyan-500' },
-                        { label: 'Upcoming', value: appointments.filter(a => a.status === 'SCHEDULED').length, icon: <Clock />, color: 'from-purple-500 to-pink-500' },
-                        { label: 'Prescriptions', value: 0, icon: <Pill />, color: 'from-green-500 to-emerald-500' },
-                        { label: 'Pending Bills', value: 0, icon: <Wallet />, color: 'from-orange-500 to-red-500' },
+                        { label: 'Total Appointments', value: appointments.length, icon: <Calendar />, color: 'from-blue-600 to-blue-700' },
+                        { label: 'Upcoming', value: appointments.filter(a => a.status === 'SCHEDULED').length, icon: <Clock />, color: 'from-slate-600 to-slate-700' },
+                        { label: 'Prescriptions', value: 0, icon: <Pill />, color: 'from-blue-500 to-blue-600' },
+                        { label: 'Pending Statements', value: 0, icon: <Wallet />, color: 'from-slate-500 to-slate-600' },
                     ].map((stat, i) => (
                         <Card key={i} className="animate-slide-up" style={{ animationDelay: `${i * 100}ms` }}>
                             <div className="flex items-center justify-between">
@@ -142,10 +142,10 @@ export const PatientDashboard: React.FC = () => {
                             {quickActions.map((action, i) => (
                                 <button
                                     key={i}
-                                    className="p-6 rounded-xl border-2 border-neutral-200 hover:border-blue-500 hover:shadow-lg transition-all group"
+                                    className="p-6 rounded-xl border border-slate-200 hover:border-blue-300 hover:shadow-md bg-white transition-all group"
                                 >
-                                    <div className={`w-12 h-12 bg-gradient-to-br ${action.color} rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform`}>
-                                        {React.cloneElement(action.icon, { className: 'w-6 h-6 text-white' })}
+                                    <div className={`w-12 h-12 bg-gradient-to-br ${action.color} rounded-lg flex items-center justify-center mb-3 shadow-sm`}>
+                                        {React.cloneElement(action.icon, { className: 'w-5 h-5 text-white' })}
                                     </div>
                                     <p className="font-semibold text-neutral-900">{action.label}</p>
                                 </button>
@@ -213,22 +213,22 @@ export const PatientDashboard: React.FC = () => {
                     {/* Sidebar */}
                     <div className="space-y-6">
                         {/* Profile Card */}
-                        <Card className="animate-slide-up">
+                        <Card className="animate-slide-up border border-slate-200 shadow-sm">
                             <CardContent>
                                 <div className="text-center">
-                                    <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                                        <User className="w-10 h-10 text-white" />
+                                    <div className="w-16 h-16 bg-blue-50 border border-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <User className="w-8 h-8 text-blue-600" />
                                     </div>
-                                    <h3 className="font-bold text-lg text-neutral-900 mb-1">{username}</h3>
-                                    <p className="text-neutral-600 text-sm mb-4">Patient ID: #12345</p>
-                                    <div className="space-y-2">
-                                        <Button variant="outline" size="sm" className="w-full">
-                                            <Settings className="w-4 h-4" />
-                                            Edit Profile
+                                    <h3 className="font-bold text-lg text-slate-900 mb-1">{username}</h3>
+                                    <p className="text-slate-500 text-sm mb-6 font-medium">Patient Record: #MRN-{new Date().getFullYear()}</p>
+                                    <div className="space-y-3">
+                                        <Button variant="outline" size="sm" className="w-full border-slate-300 text-slate-700 font-semibold h-10">
+                                            <Settings className="w-4 h-4 mr-2" />
+                                            Account Settings
                                         </Button>
-                                        <Button variant="outline" size="sm" className="w-full" onClick={handleLogout}>
-                                            <LogOut className="w-4 h-4" />
-                                            Logout
+                                        <Button variant="outline" size="sm" className="w-full border-rose-200 text-rose-600 hover:bg-rose-50 hover:border-rose-300 font-semibold h-10" onClick={handleLogout}>
+                                            <LogOut className="w-4 h-4 mr-2" />
+                                            Sign Out
                                         </Button>
                                     </div>
                                 </div>
@@ -236,25 +236,25 @@ export const PatientDashboard: React.FC = () => {
                         </Card>
 
                         {/* Health Tips */}
-                        <Card className="animate-slide-up">
+                        <Card className="animate-slide-up border border-slate-200 shadow-sm">
                             <CardHeader>
-                                <CardTitle>Health Tips</CardTitle>
+                                <CardTitle>Clinical Guidelines</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <div className="space-y-3">
-                                    <div className="p-3 bg-blue-50 rounded-lg">
-                                        <p className="text-sm text-neutral-700">
-                                            💧 Drink at least 8 glasses of water daily
+                                    <div className="p-4 bg-slate-50 border border-slate-100 rounded-lg">
+                                        <p className="text-sm text-slate-700 font-medium flex items-start gap-2">
+                                           <span className="text-lg leading-none">💧</span> Maintain adequate hydration (approx. 2L/day).
                                         </p>
                                     </div>
-                                    <div className="p-3 bg-green-50 rounded-lg">
-                                        <p className="text-sm text-neutral-700">
-                                            🏃 Exercise for 30 minutes every day
+                                    <div className="p-4 bg-slate-50 border border-slate-100 rounded-lg">
+                                        <p className="text-sm text-slate-700 font-medium flex items-start gap-2">
+                                           <span className="text-lg leading-none">🏃</span> Engage in 150 min of moderate aerobic activity weekly.
                                         </p>
                                     </div>
-                                    <div className="p-3 bg-purple-50 rounded-lg">
-                                        <p className="text-sm text-neutral-700">
-                                            😴 Get 7-8 hours of sleep each night
+                                    <div className="p-4 bg-slate-50 border border-slate-100 rounded-lg">
+                                        <p className="text-sm text-slate-700 font-medium flex items-start gap-2">
+                                           <span className="text-lg leading-none">🌙</span> Adhere to a 7-8 hour nightly sleep schedule.
                                         </p>
                                     </div>
                                 </div>

@@ -44,26 +44,26 @@ export const Navbar: React.FC = () => {
                 <div className="flex items-center justify-between">
                     {/* Logo */}
                     <Link to="/" className="flex items-center gap-3 group">
-                        <div className="w-11 h-11 bg-primary-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-primary">
+                        <div className="w-11 h-11 bg-blue-600 rounded-lg flex items-center justify-center shadow-sm">
                             <Activity className="w-6 h-6 text-white" />
                         </div>
-                        <span className={`text-2xl font-black tracking-tighter ${isScrolled ? 'text-neutral-900 dark:text-white' : 'text-white'
+                        <span className={`text-xl font-bold tracking-tight ${isScrolled ? 'text-slate-900 dark:text-white' : 'text-white'
                             }`}>
-                            OPD<span className="text-primary-500">Heal</span>
+                            OPDHeal <span className="font-medium text-blue-500">Clinical</span>
                         </span>
                     </Link>
 
                     {/* Desktop Menu */}
                     <div className="hidden md:flex items-center gap-10">
                         {['Features', 'Doctors', 'Emergency'].map((item) => (
-                            <a
+                            <Link
                                 key={item}
-                                href={`#${item.toLowerCase().replace(/\s+/g, '-')}`}
+                                to={`/${item.toLowerCase()}`}
                                 className={`text-sm font-bold uppercase tracking-widest hover:text-primary-500 transition-colors ${isScrolled ? 'text-neutral-600 dark:text-neutral-400' : 'text-white/90'
                                     }`}
                             >
                                 {item}
-                            </a>
+                            </Link>
                         ))}
 
                         <div className="h-6 w-px bg-neutral-200 dark:bg-neutral-700 mx-2"></div>
@@ -88,13 +88,13 @@ export const Navbar: React.FC = () => {
                         ) : (
                             <div className="flex items-center gap-4">
                                 <Link to="/login">
-                                    <span className={`text-sm font-bold uppercase tracking-widest px-4 cursor-pointer hover:text-primary-500 transition-colors ${isScrolled ? 'text-neutral-600 dark:text-neutral-400' : 'text-white/90'}`}>
-                                        Login
+                                    <span className={`text-sm font-semibold px-4 cursor-pointer hover:text-blue-500 transition-colors ${isScrolled ? 'text-slate-700 dark:text-slate-300' : 'text-white/90'}`}>
+                                        Provider Login
                                     </span>
                                 </Link>
                                 <Link to="/register">
-                                    <Button className="btn-primary">
-                                        Register Now <ChevronRight size={18} className="ml-1" />
+                                    <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm font-semibold px-6">
+                                        Patient Portal <ChevronRight size={18} className="ml-1 -mr-1" />
                                     </Button>
                                 </Link>
                             </div>
@@ -123,14 +123,14 @@ export const Navbar: React.FC = () => {
                 <div className="md:hidden absolute top-full left-0 right-0 bg-white dark:bg-neutral-900 shadow-2xl animate-fade-in border-t border-neutral-100 dark:border-neutral-800">
                     <div className="px-6 py-8 space-y-6">
                         {['Features', 'Doctors', 'Emergency'].map((item) => (
-                            <a
+                            <Link
                                 key={item}
-                                href={`#${item.toLowerCase().replace(/\s+/g, '-')}`}
+                                to={`/${item.toLowerCase()}`}
                                 className="block text-xl font-black text-neutral-800 dark:text-neutral-200"
                                 onClick={() => setIsMobileMenuOpen(false)}
                             >
                                 {item}
-                            </a>
+                            </Link>
                         ))}
                         <div className="pt-6 border-t border-neutral-100 dark:border-neutral-800 flex flex-col gap-4">
                             {isAuthenticated ? (
@@ -152,10 +152,10 @@ export const Navbar: React.FC = () => {
                             ) : (
                                 <>
                                     <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
-                                        <Button variant="outline" className="w-full border-neutral-200 dark:border-neutral-700 h-14 rounded-2xl font-bold">Login</Button>
+                                        <Button variant="outline" className="w-full border-slate-200 dark:border-slate-700 h-14 rounded-lg font-semibold">Provider Login</Button>
                                     </Link>
                                     <Link to="/register" onClick={() => setIsMobileMenuOpen(false)}>
-                                        <Button className="w-full btn-primary h-14">Get Started</Button>
+                                        <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white h-14 rounded-lg font-semibold">Patient Portal</Button>
                                     </Link>
                                 </>
                             )}

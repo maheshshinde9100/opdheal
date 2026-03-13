@@ -12,7 +12,6 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Card } from '../../components/Card';
-import { Badge } from '../../components/Badge';
 import { Button } from '../../components/Button';
 import { DashboardLayout } from '../../components/layout/DashboardLayout';
 import api from '../../services/api';
@@ -64,14 +63,14 @@ export const PatientOverview: React.FC = () => {
 
     const statCards = [
         {
-            label: 'Next Appointment',
+            label: 'Next Clinical Visit',
             value: nextAppt ? formatDate(nextAppt.appointmentDateTime?.split('T')[0] || '') : 'None',
             subValue: nextAppt?.doctorName || 'No upcoming',
-            icon: <Calendar className="text-primary-600" />, color: 'bg-primary-50'
+            icon: <Calendar className="text-blue-600" />, color: 'bg-blue-50'
         },
-        { label: 'Pending Bills', value: '₹ 0', subValue: 'No pending payments', icon: <CreditCard className="text-error-600" />, color: 'bg-error-50' },
-        { label: 'Consultations', value: appointments.length.toString(), subValue: 'Active schedule', icon: <Pill className="text-success-600" />, color: 'bg-success-50' },
-        { label: 'Health Score', value: '100%', subValue: 'Excellent condition', icon: <Activity className="text-warning-600" />, color: 'bg-warning-50' },
+        { label: 'Pending Invoices', value: '₹ 0', subValue: 'No pending payments', icon: <CreditCard className="text-rose-600" />, color: 'bg-rose-50' },
+        { label: 'Active Consultations', value: appointments.length.toString(), subValue: 'Current schedule', icon: <Pill className="text-emerald-600" />, color: 'bg-emerald-50' },
+        { label: 'Overall Status', value: 'Stable', subValue: 'No critical alerts', icon: <Activity className="text-amber-500" />, color: 'bg-amber-50' },
     ];
 
     return (
@@ -80,20 +79,20 @@ export const PatientOverview: React.FC = () => {
                 {/* Welcome Header */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div>
-                        <h1 className="text-4xl font-extrabold text-neutral-900 tracking-tight">
-                            Hello, <span className="text-primary-600">{username}</span>!
+                        <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
+                            Welcome, <span className="text-blue-600">{username}</span>
                         </h1>
-                        <p className="text-lg text-neutral-500 font-medium">Your health journey is looking great today.</p>
+                        <p className="text-base text-slate-600 font-medium mt-1">Manage your health records and upcoming clinical appointments.</p>
                     </div>
                     <div className="flex items-center gap-3">
                         <Link to="/patient/records">
-                            <Button className="bg-white text-neutral-900 border-2 border-neutral-200 hover:bg-neutral-50">
-                                View Records
+                            <Button className="bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 shadow-sm font-semibold">
+                                Medical Records
                             </Button>
                         </Link>
                         <Link to="/patient/doctors">
-                            <Button className="bg-primary-600 text-white shadow-primary">
-                                <Plus size={20} className="mr-2" /> Book Appointment
+                            <Button className="bg-blue-600 hover:bg-blue-700 text-white shadow-sm font-semibold">
+                                <Plus size={18} className="mr-2" /> Schedule Visit
                             </Button>
                         </Link>
                     </div>
@@ -102,20 +101,17 @@ export const PatientOverview: React.FC = () => {
                 {/* Stats Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {statCards.map((stat, i) => (
-                        <Card key={i} className="hover:border-primary-200 transition-all group overflow-hidden relative">
-                            <div className="flex items-start justify-between">
-                                <div className="space-y-2">
-                                    <p className="text-sm font-bold text-neutral-400 uppercase tracking-wider">{stat.label}</p>
-                                    <h3 className="text-2xl font-extrabold text-neutral-900">{stat.value}</h3>
-                                    <p className="text-sm font-semibold text-neutral-500 flex items-center gap-1">
-                                        {stat.subValue}
-                                    </p>
-                                </div>
-                                <div className={`w-12 h-12 ${stat.color} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                        <Card key={i} className="shadow-sm border-slate-200">
+                            <div className="flex items-start justify-between mb-3">
+                                <div className={`w-10 h-10 ${stat.color} rounded-lg flex items-center justify-center`}>
                                     {stat.icon}
                                 </div>
                             </div>
-                            <div className="absolute bottom-0 left-0 h-1 bg-primary-500 w-0 group-hover:w-full transition-all duration-300"></div>
+                            <div className="space-y-1">
+                                <p className="text-sm font-semibold text-slate-500">{stat.label}</p>
+                                <h3 className="text-2xl font-bold text-slate-900">{stat.value}</h3>
+                                <p className="text-xs font-medium text-slate-400">{stat.subValue}</p>
+                            </div>
                         </Card>
                     ))}
                 </div>
@@ -124,37 +120,36 @@ export const PatientOverview: React.FC = () => {
                     {/* Recent Activities/Appointments */}
                     <div className="lg:col-span-2 space-y-6">
                         <div className="flex items-center justify-between">
-                            <h2 className="text-2xl font-bold text-neutral-900">Upcoming Consultations</h2>
-                            <Button variant="outline" size="sm" className="font-bold">See Schedule</Button>
+                            <h2 className="text-xl font-bold text-slate-900">Upcoming Consultations</h2>
+                            <Button variant="outline" size="sm" className="font-semibold text-slate-600 border-slate-300">View Schedule</Button>
                         </div>
 
                         <div className="space-y-4">
                             {appointments.length > 0 ? (
                                 appointments.map((appt: Appointment) => (
-                                    <Card key={appt.id} className="p-0 overflow-hidden hover:shadow-xl transition-all border-neutral-200">
+                                    <Card key={appt.id} className="p-0 overflow-hidden shadow-sm border border-slate-200">
                                         <div className="flex">
-                                            <div className="w-2 bg-primary-600"></div>
-                                            <div className="flex-1 p-6 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                                            <div className="w-1.5 bg-blue-600"></div>
+                                            <div className="flex-1 p-5 flex flex-col md:flex-row md:items-center justify-between gap-6">
                                                 <div className="flex items-center gap-4">
-                                                    <div className="w-14 h-14 rounded-2xl bg-neutral-100 flex items-center justify-center overflow-hidden border-2 border-white shadow-sm font-black text-neutral-400">
+                                                    <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center border border-blue-100 font-bold text-blue-600">
                                                         {appt.doctorName?.charAt(0) || 'D'}
                                                     </div>
                                                     <div>
-                                                        <h4 className="font-bold text-lg text-neutral-900">{appt.doctorName}</h4>
-                                                        <div className="flex items-center gap-2 text-neutral-500 font-semibold text-sm">
-                                                            <Badge variant="primary" className="text-[10px]">{appt.doctorSpecialization}</Badge>
-                                                            <span>•</span>
+                                                        <h4 className="font-bold text-slate-900">{appt.doctorName}</h4>
+                                                        <div className="flex items-center gap-2 text-slate-500 font-medium text-sm">
+                                                            <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded border border-slate-200">{appt.doctorSpecialization}</span>
                                                             <span className="flex items-center gap-1"><Clock size={14} /> {appt.appointmentDateTime ? formatTime(appt.appointmentDateTime.split('T')[1]?.slice(0, 5) ?? '') : '—'}</span>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className="flex items-center gap-3">
+                                                <div className="flex items-center gap-4">
                                                     <div className="text-right hidden sm:block">
-                                                        <div className="text-sm font-bold text-neutral-900">{appt.appointmentDateTime ? formatDate(appt.appointmentDateTime.split('T')[0]) : '—'}</div>
-                                                        <div className="text-xs font-semibold text-neutral-400 capitalize">{appt.status.toLowerCase()}</div>
+                                                        <div className="text-sm font-semibold text-slate-900">{appt.appointmentDateTime ? formatDate(appt.appointmentDateTime.split('T')[0]) : '—'}</div>
+                                                        <div className="text-xs font-medium text-slate-500 uppercase tracking-wider mt-0.5">{appt.status}</div>
                                                     </div>
-                                                    <Button size="sm" className="bg-primary-50 text-primary-600 hover:bg-primary-100 border-none font-bold">
-                                                        <Video size={16} className="mr-2" /> Join Call
+                                                    <Button size="sm" className="bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 font-semibold shadow-none">
+                                                        <Video size={16} className="mr-2" /> Join Telehealth
                                                     </Button>
                                                 </div>
                                             </div>
@@ -162,65 +157,65 @@ export const PatientOverview: React.FC = () => {
                                     </Card>
                                 ))
                             ) : (
-                                <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-neutral-300">
-                                    <div className="w-20 h-20 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-6 text-neutral-400">
-                                        <Calendar size={40} />
+                                <div className="text-center py-16 bg-white rounded-xl border border-dashed border-slate-300 shadow-sm">
+                                    <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100 text-slate-400">
+                                        <Calendar size={32} />
                                     </div>
-                                    <h3 className="text-xl font-bold text-neutral-900 mb-2">No Appointments scheduled</h3>
-                                    <p className="text-neutral-500 mb-8 max-w-xs mx-auto font-medium">Schedule your first appointment with our expert doctors today.</p>
-                                    <Button className="bg-primary-600 text-white shadow-primary">Find a Doctor</Button>
+                                    <h3 className="text-lg font-bold text-slate-900 mb-1">No Consultations Scheduled</h3>
+                                    <p className="text-sm text-slate-500 mb-6 max-w-sm mx-auto font-normal">You currently have no upcoming appointments. Schedule a visit to consult with a provider.</p>
+                                    <Button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-sm">Browse Providers</Button>
                                 </div>
                             )}
                         </div>
                     </div>
 
                     {/* Sidebar widgets */}
-                    <div className="space-y-8">
+                    <div className="space-y-6">
                         {/* Health Summary Card */}
-                        <Card className="bg-gradient-to-br from-indigo-900 to-primary-800 text-white p-8 rounded-[32px] overflow-hidden relative border-none">
-                            <div className="absolute top-0 right-0 p-4 opacity-20 transform translate-x-4 -translate-y-4">
-                                <Activity size={150} strokeWidth={1} />
+                        <Card className="bg-slate-900 text-white p-6 rounded-xl overflow-hidden relative border border-slate-800 shadow-md">
+                            <div className="absolute top-0 right-0 p-4 opacity-10 transform translate-x-2 -translate-y-2">
+                                <Activity size={100} strokeWidth={1} />
                             </div>
-                            <h3 className="text-2xl font-bold mb-6">Medical History</h3>
-                            <div className="space-y-6 relative z-10">
-                                <div className="flex justify-between items-end border-b border-white/10 pb-4">
+                            <h3 className="text-lg font-bold mb-6 text-slate-100">Patient Vitals</h3>
+                            <div className="space-y-5 relative z-10">
+                                <div className="flex justify-between items-end border-b border-slate-700 pb-3">
                                     <div>
-                                        <div className="text-white/60 text-sm font-bold uppercase tracking-wider mb-1">Blood Type</div>
-                                        <div className="text-3xl font-extrabold font-poppins">{patient?.bloodGroup || '—'}</div>
+                                        <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1">Blood Type</div>
+                                        <div className="text-2xl font-bold text-slate-100">{patient?.bloodGroup || '—'}</div>
                                     </div>
-                                    <div className="text-primary-300"><ArrowUpRight size={32} /></div>
+                                    <div className="text-blue-400"><ArrowUpRight size={24} /></div>
                                 </div>
-                                <div className="flex justify-between items-end border-b border-white/10 pb-4">
+                                <div className="flex justify-between items-end border-b border-slate-700 pb-3">
                                     <div>
-                                        <div className="text-white/60 text-sm font-bold uppercase tracking-wider mb-1">Weight</div>
-                                        <div className="text-3xl font-extrabold font-poppins">{patient?.weight || '—'} <span className="text-lg font-bold opacity-60">kg</span></div>
+                                        <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1">Weight</div>
+                                        <div className="text-2xl font-bold text-slate-100">{patient?.weight || '—'} <span className="text-sm font-normal text-slate-400">kg</span></div>
                                     </div>
-                                    <div className="text-success-400"><ArrowUpRight size={32} /></div>
+                                    <div className="text-emerald-400"><ArrowUpRight size={24} /></div>
                                 </div>
                             </div>
-                            <Button className="w-full mt-8 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white font-bold h-12 rounded-2xl transition-all">
-                                Update Vitals
+                            <Button className="w-full mt-6 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-semibold h-10 transition-all shadow-none">
+                                Update Metrics
                             </Button>
                         </Card>
 
                         {/* Prescriptions Widget */}
-                        <div className="space-y-4">
-                            <div className="flex items-center justify-between px-2">
-                                <h3 className="text-xl font-bold text-neutral-900">Current Medications</h3>
-                                <Link to="/patient/prescriptions" className="text-sm font-bold text-primary-600 hover:text-primary-700">View All</Link>
+                        <div className="space-y-3 pt-2">
+                            <div className="flex items-center justify-between px-1">
+                                <h3 className="text-lg font-bold text-slate-900">Current Medications</h3>
+                                <Link to="/patient/prescriptions" className="text-xs font-semibold text-blue-600 hover:text-blue-700">View History</Link>
                             </div>
-                            <div className="space-y-3">
+                            <div className="space-y-2">
                                 {[
-                                    { name: 'Amoxicillin', dose: '500mg, 3x Day', color: 'bg-emerald-500' },
-                                    { name: 'Lisinopril', dose: '10mg, 1x Day', color: 'bg-blue-500' }
+                                    { name: 'Amoxicillin', dose: '500mg, 3x Day', color: 'bg-slate-600' },
+                                    { name: 'Lisinopril', dose: '10mg, 1x Day', color: 'bg-blue-600' }
                                 ].map((med, i) => (
-                                    <div key={i} className="flex items-center gap-4 bg-white p-4 rounded-2xl border border-neutral-100 shadow-sm hover:shadow-md transition-shadow">
-                                        <div className={`w-3 h-10 ${med.color} rounded-full`}></div>
+                                    <div key={i} className="flex items-center gap-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                                        <div className={`w-1.5 h-8 ${med.color} rounded-full`}></div>
                                         <div className="flex-1">
-                                            <div className="font-bold text-neutral-900">{med.name}</div>
-                                            <div className="text-xs font-semibold text-neutral-400">{med.dose}</div>
+                                            <div className="font-semibold text-slate-900 text-sm">{med.name}</div>
+                                            <div className="text-xs text-slate-500">{med.dose}</div>
                                         </div>
-                                        <Button size="sm" variant="outline" className="h-8 w-8 p-0 rounded-lg">
+                                        <Button size="sm" variant="outline" className="h-7 w-7 p-0 rounded border-slate-200 text-slate-600 shadow-none">
                                             <ArrowRight size={14} />
                                         </Button>
                                     </div>

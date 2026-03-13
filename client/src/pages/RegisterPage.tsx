@@ -90,37 +90,37 @@ export const RegisterPage: React.FC = () => {
     return (
         <div className="min-h-screen flex bg-white font-inter">
             {/* Left Side: Visual/Branding */}
-            <div className="hidden lg:flex w-5/12 bg-primary-600 relative overflow-hidden items-center justify-center sticky top-0 h-screen">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary-700 to-indigo-900 opacity-95"></div>
+            <div className="hidden lg:flex w-5/12 bg-slate-900 relative overflow-hidden items-center justify-center sticky top-0 h-screen">
+                <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-950 opacity-95"></div>
                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
 
                 <div className="relative z-10 p-12 text-white max-w-lg">
                     <Link to="/" className="flex items-center gap-3 mb-12 group">
-                        <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center group-hover:rotate-12 transition-transform shadow-lg">
-                            <Activity className="w-6 h-6 text-primary-600" />
+                        <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center shadow-md">
+                            <Activity className="w-6 h-6 text-white" />
                         </div>
-                        <span className="text-3xl font-extrabold tracking-tight">OPDHeal</span>
+                        <span className="text-2xl font-bold tracking-tight">OPDHeal Clinical</span>
                     </Link>
 
-                    <h1 className="text-4xl font-bold mb-6 leading-tight">
-                        Start Your <span className="text-primary-200">Health Journey</span> Today
+                    <h1 className="text-3xl font-bold mb-6 leading-tight">
+                        Register for <span className="text-blue-400">Patient Portal</span>
                     </h1>
 
-                    <p className="text-lg text-primary-100 mb-10 leading-relaxed">
-                        Join over 10,000+ patients and doctors using OPDHeal for more efficient and modern healthcare.
+                    <p className="text-base text-slate-300 mb-10 leading-relaxed">
+                        Create a secure account to access your medical records, book appointments, and connect with healthcare professionals.
                     </p>
 
                     <div className="space-y-6">
                         {[
-                            { icon: <CheckCircle2 className="text-success-400" />, title: 'Digital Health Records', desc: 'Securely store and access your medical history anywhere.' },
-                            { icon: <ShieldCheck className="text-success-400" />, title: 'Privacy Guaranteed', desc: 'Your data is encrypted and only accessible by you and your doctor.' },
-                            { icon: <Heart className="text-success-400" />, title: 'Unified Care', desc: 'Connect with expert doctors across multiple specializations.' }
+                            { icon: <CheckCircle2 className="text-emerald-400" />, title: 'Digital Health Records', desc: 'Securely store and access your medical history anywhere.' },
+                            { icon: <ShieldCheck className="text-emerald-400" />, title: 'Privacy Guaranteed', desc: 'Your data is strictly encrypted in compliance with healthcare standards.' },
+                            { icon: <Heart className="text-emerald-400" />, title: 'Unified Care', desc: 'Connect with expert doctors across multiple clinical departments.' }
                         ].map((item, i) => (
-                            <div key={i} className="flex items-start gap-4 p-4 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10">
+                            <div key={i} className="flex items-start gap-4 p-4 rounded-xl bg-slate-800/50 border border-slate-700">
                                 <div className="mt-1">{item.icon}</div>
                                 <div>
-                                    <h3 className="font-bold text-white text-base">{item.title}</h3>
-                                    <p className="text-sm text-primary-100/70">{item.desc}</p>
+                                    <h3 className="font-semibold text-white text-sm">{item.title}</h3>
+                                    <p className="text-sm text-slate-400 mt-1">{item.desc}</p>
                                 </div>
                             </div>
                         ))}
@@ -129,11 +129,11 @@ export const RegisterPage: React.FC = () => {
             </div>
 
             {/* Right Side: Registration Form */}
-            <div className="w-full lg:w-7/12 flex flex-col items-center justify-start p-6 lg:p-12 overflow-y-auto">
+            <div className="w-full lg:w-7/12 flex flex-col items-center justify-start p-6 lg:p-12 overflow-y-auto bg-white">
                 <div className="w-full max-w-xl space-y-8 py-8">
                     <div className="space-y-2">
-                        <h2 className="text-3xl font-extrabold text-neutral-900 tracking-tight">Create an Account</h2>
-                        <p className="text-neutral-500 font-medium italic">Fill in your information to get started.</p>
+                        <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Profile Registration</h2>
+                        <p className="text-slate-500 font-medium">Please provide accurate information for your record.</p>
                     </div>
 
                     {errors.submit && (
@@ -150,26 +150,24 @@ export const RegisterPage: React.FC = () => {
                                 <button
                                     type="button"
                                     onClick={() => handleChange({ target: { name: 'role', value: 'PATIENT' } } as any)}
-                                    className={`relative p-5 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 group ${formData.role === 'PATIENT'
-                                        ? 'border-primary-600 bg-primary-50 ring-4 ring-primary-50'
-                                        : 'border-neutral-100 hover:border-primary-200'
+                                    className={`relative p-4 rounded-xl border transition-colors flex flex-col items-center gap-2 group ${formData.role === 'PATIENT'
+                                        ? 'border-blue-600 bg-blue-50/50'
+                                        : 'border-slate-200 hover:border-blue-300'
                                         }`}
                                 >
-                                    <UserCircle size={32} className={formData.role === 'PATIENT' ? 'text-primary-600' : 'text-neutral-400 group-hover:text-primary-400'} />
-                                    <span className={`font-bold ${formData.role === 'PATIENT' ? 'text-primary-700' : 'text-neutral-500'}`}>Patient</span>
-                                    {formData.role === 'PATIENT' && <div className="absolute top-2 right-2 w-2 h-2 bg-primary-600 rounded-full"></div>}
+                                    <UserCircle size={28} className={formData.role === 'PATIENT' ? 'text-blue-600' : 'text-slate-400'} />
+                                    <span className={`text-sm font-semibold ${formData.role === 'PATIENT' ? 'text-blue-700' : 'text-slate-500'}`}>Patient</span>
                                 </button>
                                 <button
                                     type="button"
                                     onClick={() => handleChange({ target: { name: 'role', value: 'DOCTOR' } } as any)}
-                                    className={`relative p-5 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 group ${formData.role === 'DOCTOR'
-                                        ? 'border-primary-600 bg-primary-50 ring-4 ring-primary-50'
-                                        : 'border-neutral-100 hover:border-primary-200'
+                                    className={`relative p-4 rounded-xl border transition-colors flex flex-col items-center gap-2 group ${formData.role === 'DOCTOR'
+                                        ? 'border-blue-600 bg-blue-50/50'
+                                        : 'border-slate-200 hover:border-blue-300'
                                         }`}
                                 >
-                                    <Activity size={32} className={formData.role === 'DOCTOR' ? 'text-primary-600' : 'text-neutral-400 group-hover:text-primary-400'} />
-                                    <span className={`font-bold ${formData.role === 'DOCTOR' ? 'text-primary-700' : 'text-neutral-500'}`}>Doctor</span>
-                                    {formData.role === 'DOCTOR' && <div className="absolute top-2 right-2 w-2 h-2 bg-primary-600 rounded-full"></div>}
+                                    <Activity size={28} className={formData.role === 'DOCTOR' ? 'text-blue-600' : 'text-slate-400'} />
+                                    <span className={`text-sm font-semibold ${formData.role === 'DOCTOR' ? 'text-blue-700' : 'text-slate-500'}`}>Medical Provider</span>
                                 </button>
                             </div>
                         </div>
@@ -249,17 +247,17 @@ export const RegisterPage: React.FC = () => {
                             />
                         </div>
 
-                        <div className="bg-neutral-50 p-4 rounded-2xl text-xs text-neutral-500 font-medium">
-                            By clicking register, you agree to our <a href="#" className="text-primary-600 font-bold hover:underline">Terms of Service</a> and <a href="#" className="text-primary-600 font-bold hover:underline">Privacy Policy</a>.
+                        <div className="bg-slate-50 p-4 rounded-lg text-sm text-slate-500 border border-slate-200">
+                            By registering, you acknowledge and agree to the <a href="#" className="text-blue-600 font-semibold hover:underline">Terms of Service</a> and <a href="#" className="text-blue-600 font-semibold hover:underline">Privacy Policy</a> governing the use of clinical data.
                         </div>
 
                         <Button
                             type="submit"
-                            className="w-full h-14 bg-primary-600 hover:bg-primary-700 text-white rounded-xl text-lg font-bold shadow-primary transition-all active:scale-[0.98]"
+                            className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-base font-semibold shadow-sm transition-colors"
                             isLoading={isLoading}
                         >
-                            Complete Registration
-                            <ArrowRight className="ml-2 w-5 h-5" />
+                            Register Profile
+                            <ArrowRight className="ml-2 w-4 h-4" />
                         </Button>
 
                         <p className="text-center text-neutral-500 font-medium">
