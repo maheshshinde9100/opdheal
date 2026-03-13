@@ -3,65 +3,161 @@ import {
     Pill,
     Search,
     Download,
-    Calendar,
     CheckCircle2,
     AlertCircle,
-    ArrowRight
+    ArrowRight,
+    RefreshCw,
+    FileText,
+    Clock,
+    User,
+    X
 } from 'lucide-react';
 import { DashboardLayout } from '../../components/layout/DashboardLayout';
-import { Card } from '../../components/Card';
 import { Button } from '../../components/Button';
 import { Badge } from '../../components/Badge';
 import { Input } from '../../components/Input';
 import api from '../../services/api';
 import { formatDate } from '../../utils/helpers';
 import type { Prescription } from '../../types';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 
 export const PatientPrescriptions: React.FC = () => {
     const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+    const [downloading, setDownloading] = useState<string | null>(null);
+    const [selectedPrescription, setSelectedPrescription] = useState<Prescription | null>(null);
+    const profileId = api.getProfileId();
 
     useEffect(() => {
         loadPrescriptions();
     }, []);
 
     const loadPrescriptions = async () => {
+        setIsLoading(true);
         try {
-            const data = await api.getAllPrescriptions();
+            let data: Prescription[];
+            if (profileId) {
+                data = await api.getPrescriptionsByPatient(profileId);
+            } else {
+                data = await api.getAllPrescriptions();
+            }
             setPrescriptions(data);
         } catch (error) {
-            console.error("Failed to load prescriptions", error);
+            console.error('Failed to load prescriptions', error);
         } finally {
             setIsLoading(false);
         }
     };
 
     const filteredPrescriptions = prescriptions.filter(p =>
-        p.medicationName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.doctor?.user?.firstName?.toLowerCase().includes(searchTerm.toLowerCase())
+        p.medicines?.some(m => m.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        p.doctorName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        p.doctorSpecialization?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        p.medicines?.some(m => m.dosage.toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
-    const handleDownload = async (prescription: Prescription, elementId: string) => {
-        const element = document.getElementById(elementId);
-        if (!element) return;
-
+    const handleDownloadPDF = async (prescription: Prescription) => {
+        setDownloading(String(prescription.id));
         try {
-            const canvas = await html2canvas(element, { scale: 2, backgroundColor: '#ffffff' });
-            const imgData = canvas.toDataURL('image/png');
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            const pdfWidth = 210; // A4 width in mm
-            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+            const { default: jsPDF } = await import('jspdf');
+            const doc = new jsPDF('p', 'mm', 'a4');
+            const pw = doc.internal.pageSize.getWidth();
 
-            pdf.text(`OpdHeal - Digital Prescription - ID: ${prescription.id}`, 10, 10);
-            pdf.addImage(imgData, 'PNG', 10, 20, pdfWidth - 20, pdfHeight - 20);
-            pdf.save(`Prescription_${prescription.medicationName}_${formatDate(prescription.prescriptionDate)}.pdf`);
-        } catch (error) {
-            console.error('Error generating PDF', error);
+            // Header background
+            doc.setFillColor(37, 99, 235);
+            doc.rect(0, 0, 210, 40, 'F');
+
+            // Title
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(22);
+            doc.setFont('helvetica', 'bold');
+            doc.text('OPDHeal', 15, 18);
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.text('Digital Prescription', 15, 26);
+            doc.text(`Ref: #RX-${prescription.id}`, 15, 33);
+
+            // Date on right
+            doc.text(`Date: ${formatDate(prescription.prescriptionDate)}`, pw - 15, 26, { align: 'right' });
+
+            // Reset text color
+            doc.setTextColor(30, 30, 30);
+
+            // Section: Doctor Info
+            doc.setFillColor(248, 250, 252);
+            doc.roundedRect(10, 48, pw - 20, 30, 3, 3, 'F');
+            doc.setFontSize(9);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(100, 116, 139);
+            doc.text('PRESCRIBED BY', 16, 57);
+            doc.setFontSize(13);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(30, 30, 30);
+            doc.text(prescription.doctorName || 'Unknown Doctor', 16, 65);
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(100, 116, 139);
+            doc.text(prescription.doctorSpecialization || '', 16, 72);
+
+            // Divider
+            doc.setDrawColor(226, 232, 240);
+            doc.setLineWidth(0.4);
+            doc.line(10, 85, pw - 10, 85);
+
+            // Section: Medication List
+            doc.setFontSize(9);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(100, 116, 139);
+            doc.text('PRESCRIBED MEDICATIONS', 16, 95);
+
+            let currentY = 105;
+            prescription.medicines.forEach((med, idx) => {
+                doc.setFontSize(12);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(37, 99, 235);
+                doc.text(`${idx + 1}. ${med.name}`, 16, currentY);
+
+                doc.setFontSize(9);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(71, 85, 105);
+                doc.text(`Dosage: ${med.dosage} | Frequency: ${med.frequency} | Duration: ${med.durationDays} days`, 22, currentY + 6);
+                
+                currentY += 18;
+            });
+
+            // Instructions
+            doc.setFillColor(255, 251, 235);
+            doc.roundedRect(10, currentY + 5, pw - 20, 30, 3, 3, 'F');
+            doc.setFontSize(9);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(146, 64, 14);
+            doc.text('⚠ INSTRUCTIONS', 16, currentY + 15);
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(92, 60, 0);
+            const instructionLines = doc.splitTextToSize(
+                prescription.instructions || 'Take as prescribed. Complete the full course of treatment.',
+                pw - 40
+            );
+            doc.text(instructionLines, 16, 163);
+
+            // Footer
+            doc.setFillColor(37, 99, 235);
+            doc.rect(0, 275, 210, 22, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(8);
+            doc.setFont('helvetica', 'normal');
+            doc.text('This is a digitally generated prescription from OPDHeal portal. Contact your doctor for queries.', pw / 2, 287, { align: 'center' });
+
+            doc.save(`Prescription_${prescription.id}.pdf`);
+        } catch (err) {
+            console.error('PDF generation failed', err);
+        } finally {
+            setDownloading(null);
         }
     };
+
+    const activeCount = prescriptions.length;
 
     return (
         <DashboardLayout role="PATIENT">
@@ -70,133 +166,258 @@ export const PatientPrescriptions: React.FC = () => {
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div>
                         <h1 className="text-3xl font-extrabold text-neutral-900 tracking-tight">Prescription Hub</h1>
-                        <p className="text-neutral-500 font-medium">Digital prescriptions and medication guidance from your doctors.</p>
+                        <p className="text-neutral-500 font-medium mt-1">Your digital prescriptions — download, review, and track medications.</p>
                     </div>
+                    <Button
+                        onClick={loadPrescriptions}
+                        className="bg-white text-neutral-700 border border-neutral-200 hover:bg-neutral-50 shadow-sm h-11"
+                    >
+                        <RefreshCw size={16} className="mr-2" /> Refresh
+                    </Button>
                 </div>
 
-                {/* Quick Info Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <Card className="bg-primary-600 border-none p-6 text-white flex flex-col justify-between h-40">
-                        <div className="flex justify-between items-start">
-                            <Pill size={32} />
-                            <Badge className="bg-white/20 border-white/30 text-white text-[10px] font-bold">Active</Badge>
+                {/* Stats Row */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {[
+                        {
+                            icon: <Pill size={22} />,
+                            label: 'Total Prescriptions',
+                            value: activeCount,
+                            color: 'text-primary-600',
+                            bg: 'bg-primary-50',
+                            border: 'border-primary-100'
+                        },
+                        {
+                            icon: <CheckCircle2 size={22} />,
+                            label: 'Active Medications',
+                            value: activeCount,
+                            color: 'text-success-600',
+                            bg: 'bg-success-50',
+                            border: 'border-success-100'
+                        },
+                        {
+                            icon: <Clock size={22} />,
+                            label: 'Next Review',
+                            value: 'In 7 Days',
+                            color: 'text-warning-600',
+                            bg: 'bg-warning-50',
+                            border: 'border-warning-100'
+                        },
+                        {
+                            icon: <AlertCircle size={22} />,
+                            label: 'Refills Pending',
+                            value: 0,
+                            color: 'text-error-600',
+                            bg: 'bg-error-50',
+                            border: 'border-error-100'
+                        },
+                    ].map((stat, i) => (
+                        <div key={i} className={`flex items-center gap-4 bg-white rounded-2xl p-4 border ${stat.border} shadow-sm`}>
+                            <div className={`w-11 h-11 ${stat.bg} ${stat.color} rounded-xl flex items-center justify-center flex-shrink-0`}>
+                                {stat.icon}
+                            </div>
+                            <div>
+                                <p className="text-xs font-bold text-neutral-400 uppercase tracking-wider">{stat.label}</p>
+                                <p className="text-xl font-black text-neutral-900">{stat.value}</p>
+                            </div>
                         </div>
-                        <div>
-                            <p className="text-primary-100 text-xs font-bold uppercase tracking-widest">Active Meds</p>
-                            <h3 className="text-3xl font-black">4 Drugs</h3>
-                        </div>
-                    </Card>
-                    <div className="md:col-span-3 grid grid-cols-1 sm:grid-cols-3 gap-6">
-                        <Card className="bg-white border-neutral-100 p-6 flex items-center gap-4 shadow-soft">
-                            <div className="w-12 h-12 bg-success-50 rounded-2xl flex items-center justify-center text-success-600">
-                                <CheckCircle2 size={24} />
-                            </div>
-                            <div>
-                                <p className="text-xs font-bold text-neutral-400 uppercase tracking-widest">Next Dosage</p>
-                                <p className="text-lg font-black text-neutral-900">02:00 PM</p>
-                            </div>
-                        </Card>
-                        <Card className="bg-white border-neutral-100 p-6 flex items-center gap-4 shadow-soft">
-                            <div className="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600">
-                                <Calendar size={24} />
-                            </div>
-                            <div>
-                                <p className="text-xs font-bold text-neutral-400 uppercase tracking-widest">Renew Date</p>
-                                <p className="text-lg font-black text-neutral-900">In 5 Days</p>
-                            </div>
-                        </Card>
-                        <Card className="bg-white border-neutral-100 p-6 flex items-center gap-4 shadow-soft">
-                            <div className="w-12 h-12 bg-warning-50 rounded-2xl flex items-center justify-center text-warning-600">
-                                <AlertCircle size={24} />
-                            </div>
-                            <div>
-                                <p className="text-xs font-bold text-neutral-400 uppercase tracking-widest">Refills left</p>
-                                <p className="text-lg font-black text-neutral-900">2 Left</p>
-                            </div>
-                        </Card>
-                    </div>
+                    ))}
                 </div>
 
                 {/* Search */}
                 <div className="relative">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" size={20} />
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" size={18} />
                     <Input
-                        placeholder="Search by medicine name or doctor..."
-                        className="pl-12 h-14 bg-white border-neutral-100 shadow-soft"
+                        placeholder="Search by medication, doctor name..."
+                        className="pl-12 h-12 bg-white border-neutral-200 shadow-sm rounded-xl"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
+                    {searchTerm && (
+                        <button
+                            className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600"
+                            onClick={() => setSearchTerm('')}
+                        >
+                            <X size={16} />
+                        </button>
+                    )}
                 </div>
 
                 {/* Prescriptions List */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {isLoading ? (
-                        <div className="col-span-full text-center py-20 font-bold text-neutral-400">Loading prescriptions...</div>
-                    ) : filteredPrescriptions.length > 0 ? (
-                        filteredPrescriptions.map((p) => (
-                            <Card key={p.id} id={`prescription-card-${p.id}`} className="p-0 overflow-hidden border-neutral-100 hover:border-primary-200 transition-all group flex flex-col">
-                                <div className="p-6 flex-1 flex flex-col justify-between">
-                                    <div className="flex items-start justify-between mb-6">
+                {isLoading ? (
+                    <div className="flex flex-col items-center py-24 gap-4">
+                        <div className="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin" />
+                        <p className="text-neutral-400 font-semibold">Loading prescriptions...</p>
+                    </div>
+                ) : filteredPrescriptions.length > 0 ? (
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                        {filteredPrescriptions.map((p) => (
+                            <div
+                                key={p.id}
+                                className="bg-white rounded-2xl border border-neutral-100 hover:border-primary-200 shadow-sm hover:shadow-lg transition-all group overflow-hidden flex flex-col"
+                            >
+                                <div className="h-1.5 bg-gradient-to-r from-primary-400 via-primary-600 to-indigo-600 w-full" />
+                                <div className="p-6 flex-1 flex flex-col gap-5">
+                                    <div className="flex items-start justify-between gap-4">
                                         <div className="flex items-center gap-4">
-                                            <div className="w-14 h-14 rounded-2xl bg-primary-100 text-primary-600 flex items-center justify-center group-hover:bg-primary-600 group-hover:text-white transition-all">
-                                                <Pill size={28} />
+                                            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-500 to-indigo-600 flex items-center justify-center text-white shadow-md">
+                                                <Pill size={26} />
                                             </div>
                                             <div>
-                                                <h3 className="text-xl font-black text-neutral-900 leading-tight">{p.medicationName}</h3>
-                                                <p className="text-sm font-bold text-neutral-500 flex items-center gap-2 mt-1">
-                                                    <Badge variant="success" size="sm" className="font-bold">{p.dosage}</Badge>
-                                                    <span>•</span>
-                                                    <span>{p.duration}</span>
-                                                </p>
+                                                <h3 className="text-lg font-black text-neutral-900 leading-tight">
+                                                    {p.medicines && p.medicines.length > 0 ? p.medicines[0].name : 'Prescription'}
+                                                    {p.medicines && p.medicines.length > 1 && <span className="text-xs text-primary-500 ml-2">+{p.medicines.length - 1} more</span>}
+                                                </h3>
+                                                <p className="text-xs font-semibold text-neutral-500">{formatDate(p.prescriptionDate)}</p>
                                             </div>
                                         </div>
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            className="h-10 w-10 p-0 border-neutral-200 rounded-xl"
-                                            onClick={() => handleDownload(p, `prescription-card-${p.id}`)}
-                                            title="Download PDF"
-                                        >
-                                            <Download size={18} />
-                                        </Button>
-                                    </div>
-
-                                    <div className="space-y-4">
-                                        <div className="bg-neutral-50 p-4 rounded-2xl space-y-3">
-                                            <div className="flex items-center justify-between text-xs font-bold">
-                                                <span className="text-neutral-400 uppercase tracking-widest">Frequency</span>
-                                                <span className="text-neutral-900">{p.frequency}</span>
-                                            </div>
-                                            <div className="flex items-center justify-between text-xs font-bold">
-                                                <span className="text-neutral-400 uppercase tracking-widest">Prescribed By</span>
-                                                <span className="text-primary-600">Dr. {p.doctor?.user?.firstName} {p.doctor?.user?.lastName}</span>
-                                            </div>
-                                            <div className="flex items-center justify-between text-xs font-bold">
-                                                <span className="text-neutral-400 uppercase tracking-widest">Date Issued</span>
-                                                <span className="text-neutral-700">{formatDate(p.prescriptionDate)}</span>
-                                            </div>
-                                        </div>
-
-                                        <div className="flex items-start gap-2 bg-indigo-50/50 p-4 rounded-2xl border border-indigo-100/50 text-indigo-700">
-                                            <AlertCircle size={16} className="mt-0.5 flex-shrink-0" />
-                                            <p className="text-xs font-bold leading-relaxed">{p.instructions || 'Follow as prescribed by the doctor.'}</p>
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={() => setSelectedPrescription(p)}
+                                                className="w-9 h-9 rounded-xl border border-neutral-200 flex items-center justify-center text-neutral-500 hover:bg-neutral-50 hover:text-neutral-700 transition-colors"
+                                            >
+                                                <FileText size={16} />
+                                            </button>
+                                            <button
+                                                onClick={() => handleDownloadPDF(p)}
+                                                disabled={downloading === String(p.id)}
+                                                className="w-9 h-9 rounded-xl border border-primary-200 bg-primary-50 flex items-center justify-center text-primary-600 hover:bg-primary-100 transition-colors disabled:opacity-50"
+                                            >
+                                                {downloading === String(p.id) ? <RefreshCw size={15} className="animate-spin" /> : <Download size={15} />}
+                                            </button>
                                         </div>
                                     </div>
+
+                                    <div className="space-y-3">
+                                        {p.medicines?.map((med, idx) => (
+                                            <div key={idx} className="bg-neutral-50 rounded-xl p-3 flex justify-between items-center border border-neutral-100">
+                                                <div>
+                                                    <p className="text-sm font-bold text-neutral-800">{med.name}</p>
+                                                    <p className="text-[10px] text-neutral-500 font-medium">{med.dosage} • {med.frequency}</p>
+                                                </div>
+                                                <Badge variant="primary" className="text-[9px] h-5">{med.durationDays} days</Badge>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    {p.instructions && (
+                                        <div className="flex items-start gap-2.5 bg-amber-50 border border-amber-100 rounded-xl p-3">
+                                            <AlertCircle size={15} className="text-amber-600 mt-0.5 flex-shrink-0" />
+                                            <p className="text-xs font-semibold text-amber-800 leading-relaxed truncate">{p.instructions}</p>
+                                        </div>
+                                    )}
                                 </div>
-                                <div className="bg-neutral-50 p-4 border-t border-neutral-100 flex items-center justify-between group-hover:bg-primary-50 group-hover:border-primary-100 transition-colors">
-                                    <span className="text-xs font-bold text-neutral-400 uppercase">Pharmacy Refill</span>
-                                    <button className="text-primary-600 text-xs font-black flex items-center gap-1 group/btn">
-                                        Send to Pharmacy <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
+
+                                <div className="border-t border-neutral-100 px-6 py-3 flex items-center justify-between bg-neutral-50/50">
+                                    <div className="flex items-center gap-2 text-neutral-500">
+                                        <User size={13} />
+                                        <span className="text-xs font-bold">{p.doctorName || 'Unknown Doctor'}</span>
+                                        {p.doctorSpecialization && (
+                                            <span className="text-[10px] text-neutral-400">• {p.doctorSpecialization}</span>
+                                        )}
+                                    </div>
+                                    <button
+                                        onClick={() => handleDownloadPDF(p)}
+                                        className="text-primary-600 text-xs font-black flex items-center gap-1 hover:gap-2 transition-all"
+                                    >
+                                        Download <ArrowRight size={12} />
                                     </button>
                                 </div>
-                            </Card>
-                        ))
-                    ) : (
-                        <div className="col-span-full text-center py-20">
-                            <p className="text-neutral-500 font-bold italic">No prescriptions found.</p>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="text-center py-24 bg-white rounded-3xl border border-dashed border-neutral-200">
+                        <div className="w-24 h-24 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-6 text-neutral-300">
+                            <Pill size={44} />
                         </div>
-                    )}
-                </div>
+                        <h3 className="text-2xl font-bold text-neutral-900 mb-2">No Prescriptions Found</h3>
+                        <p className="text-neutral-400 font-medium max-w-xs mx-auto">
+                            {searchTerm
+                                ? `No prescriptions match "${searchTerm}". Try a different search.`
+                                : 'Your doctor has not issued any prescriptions yet.'}
+                        </p>
+                        {searchTerm && (
+                            <button
+                                onClick={() => setSearchTerm('')}
+                                className="mt-6 text-primary-600 font-bold text-sm hover:underline"
+                            >
+                                Clear search
+                            </button>
+                        )}
+                    </div>
+                )}
+
+                {/* Detail Modal */}
+                {selectedPrescription && (
+                    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                        <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden animate-slide-up">
+                            <div className="bg-gradient-to-r from-primary-600 to-indigo-600 p-6 text-white">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <p className="text-primary-200 text-xs font-bold uppercase tracking-wider mb-1">Digital Prescription</p>
+                                        <h2 className="text-2xl font-black">{selectedPrescription.medicines?.[0]?.name || 'Prescription Details'}</h2>
+                                    </div>
+                                    <button
+                                        onClick={() => setSelectedPrescription(null)}
+                                        className="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-xl flex items-center justify-center transition-colors"
+                                    >
+                                        <X size={20} />
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="p-6 space-y-5">
+                                <div className="space-y-3">
+                                    <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider px-1">Prescribed Medicines</p>
+                                    {selectedPrescription.medicines.map((med, idx) => (
+                                        <div key={idx} className="bg-neutral-50 rounded-xl p-4 flex justify-between items-center">
+                                            <div>
+                                                <p className="font-bold text-neutral-900">{med.name}</p>
+                                                <p className="text-xs text-neutral-500">{med.dosage} • {med.frequency}</p>
+                                            </div>
+                                            <div className="text-right">
+                                                <p className="text-xs font-bold text-primary-600">{med.durationDays} Days</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="bg-neutral-50 rounded-xl p-4">
+                                    <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-2">Prescribed By</p>
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center text-primary-600 font-black">
+                                            {selectedPrescription.doctorName?.charAt(0) || 'D'}
+                                        </div>
+                                        <div>
+                                            <p className="font-bold text-neutral-900">{selectedPrescription.doctorName}</p>
+                                            <p className="text-xs text-neutral-500">{selectedPrescription.doctorSpecialization}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {selectedPrescription.instructions && (
+                                    <div className="bg-amber-50 border border-amber-100 rounded-xl p-4">
+                                        <p className="text-[10px] font-bold text-amber-600 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                                            <AlertCircle size={12} /> Instructions
+                                        </p>
+                                        <p className="text-sm text-amber-800 font-medium leading-relaxed">{selectedPrescription.instructions}</p>
+                                    </div>
+                                )}
+
+                                <Button
+                                    className="w-full bg-primary-600 text-white h-12 rounded-xl font-bold"
+                                    onClick={() => {
+                                        handleDownloadPDF(selectedPrescription);
+                                        setSelectedPrescription(null);
+                                    }}
+                                >
+                                    <Download size={18} className="mr-2" /> Download PDF
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </DashboardLayout>
     );

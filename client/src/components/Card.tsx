@@ -1,11 +1,10 @@
 import React from 'react';
 import { cn } from '../utils/helpers';
 
-interface CardProps {
+interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
     children: React.ReactNode;
     className?: string;
     hoverable?: boolean;
-    onClick?: () => void;
     style?: React.CSSProperties;
 }
 
@@ -15,6 +14,7 @@ export const Card: React.FC<CardProps> = ({
     hoverable = false,
     onClick,
     style,
+    ...rest
 }) => {
     return (
         <div
@@ -26,11 +26,13 @@ export const Card: React.FC<CardProps> = ({
             )}
             onClick={onClick}
             style={style}
+            {...rest}
         >
             {children}
         </div>
     );
 };
+
 
 interface CardHeaderProps {
     children: React.ReactNode;
@@ -39,11 +41,12 @@ interface CardHeaderProps {
 
 export const CardHeader: React.FC<CardHeaderProps> = ({ children, className }) => {
     return (
-        <div className={cn('border-b border-neutral-200 pb-3 mb-4', className)}>
+        <div className={cn('border-b pb-3 mb-4', className)} style={{ borderColor: 'var(--border-default)' }}>
             {children}
         </div>
     );
 };
+
 
 interface CardTitleProps {
     children: React.ReactNode;
@@ -52,11 +55,12 @@ interface CardTitleProps {
 
 export const CardTitle: React.FC<CardTitleProps> = ({ children, className }) => {
     return (
-        <h3 className={cn('text-xl font-bold text-neutral-900', className)}>
+        <h3 className={cn('text-lg font-semibold', className)} style={{ color: 'var(--text-primary)' }}>
             {children}
         </h3>
     );
 };
+
 
 interface CardContentProps {
     children: React.ReactNode;
@@ -78,8 +82,9 @@ interface CardFooterProps {
 
 export const CardFooter: React.FC<CardFooterProps> = ({ children, className }) => {
     return (
-        <div className={cn('border-t border-neutral-200 pt-4 mt-4', className)}>
+        <div className={cn('border-t pt-4 mt-4', className)} style={{ borderColor: 'var(--border-default)' }}>
             {children}
         </div>
     );
 };
+

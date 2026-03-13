@@ -1,5 +1,6 @@
 package com.mahesh.opdheal.controller;
 
+import com.mahesh.opdheal.dto.PatientDto;
 import com.mahesh.opdheal.dto.PatientHistoryDto;
 import com.mahesh.opdheal.model.Patient;
 import com.mahesh.opdheal.service.PatientService;
@@ -26,13 +27,13 @@ public class PatientController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('DOCTOR')")
-    public ResponseEntity<List<Patient>> getAllPatients() {
+    public ResponseEntity<List<PatientDto>> getAllPatients() {
         return ResponseEntity.ok(patientService.getAllPatients());
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('DOCTOR') or @customSecurityExpression.hasUserId(authentication, #id)")
-    public ResponseEntity<Patient> getPatientById(@PathVariable String id) {
+    public ResponseEntity<PatientDto> getPatientById(@PathVariable String id) {
         return patientService.getPatientById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

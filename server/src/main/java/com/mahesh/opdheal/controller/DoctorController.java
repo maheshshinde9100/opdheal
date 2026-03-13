@@ -1,5 +1,6 @@
 package com.mahesh.opdheal.controller;
 
+import com.mahesh.opdheal.dto.DoctorDto;
 import com.mahesh.opdheal.model.Appointment;
 import com.mahesh.opdheal.model.Doctor;
 import com.mahesh.opdheal.service.DoctorService;
@@ -26,25 +27,25 @@ public class DoctorController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('PATIENT')")
-    public ResponseEntity<List<Doctor>> getAllDoctors() {
+    public ResponseEntity<List<DoctorDto>> getAllDoctors() {
         return ResponseEntity.ok(doctorService.getAllDoctors());
     }
 
     @GetMapping("/available")
     @PreAuthorize("hasRole('ADMIN') or hasRole('PATIENT')")
-    public ResponseEntity<List<Doctor>> getAvailableDoctors() {
+    public ResponseEntity<List<DoctorDto>> getAvailableDoctors() {
         return ResponseEntity.ok(doctorService.getAvailableDoctors());
     }
 
     @GetMapping("/specialization/{specialization}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('PATIENT')")
-    public ResponseEntity<List<Doctor>> getDoctorsBySpecialization(@PathVariable String specialization) {
+    public ResponseEntity<List<DoctorDto>> getDoctorsBySpecialization(@PathVariable String specialization) {
         return ResponseEntity.ok(doctorService.getDoctorsBySpecialization(specialization));
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('DOCTOR') or hasRole('PATIENT')")
-    public ResponseEntity<Doctor> getDoctorById(@PathVariable String id) {
+    public ResponseEntity<DoctorDto> getDoctorById(@PathVariable String id) {
         return doctorService.getDoctorById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

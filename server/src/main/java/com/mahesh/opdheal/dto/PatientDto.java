@@ -8,6 +8,9 @@ import java.util.List;
 public class PatientDto {
     private String id;
     private String userId;
+    private String firstName;
+    private String lastName;
+    private String email;
     private String phoneNumber;
     private LocalDate dateOfBirth;
     private String gender;
@@ -15,5 +18,6 @@ public class PatientDto {
     private String emergencyContact;
     private List<String> allergies;
     private String bloodGroup;
+    private String weight;
     private String medicalHistory;
 }

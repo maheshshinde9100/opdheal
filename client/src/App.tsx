@@ -3,6 +3,9 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { LandingPage } from './pages/LandingPage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
+import { FeaturesPage } from './pages/FeaturesPage';
+import { DoctorsPage } from './pages/DoctorsPage';
+import { EmergencyPage } from './pages/EmergencyPage';
 import { PatientOverview } from './pages/dashboard/PatientOverview';
 import { PatientAppointments } from './pages/dashboard/PatientAppointments';
 import { PatientDoctors } from './pages/dashboard/PatientDoctors';
@@ -16,6 +19,7 @@ import { DoctorPatients } from './pages/dashboard/DoctorPatients';
 import { DoctorSchedule } from './pages/dashboard/DoctorSchedule';
 import { DoctorRecords } from './pages/dashboard/DoctorRecords';
 import { DoctorPrescriptions } from './pages/dashboard/DoctorPrescriptions';
+import { DoctorProfile } from './pages/dashboard/DoctorProfile';
 import { DoctorSettings } from './pages/dashboard/DoctorSettings';
 import { AdminOverview } from './pages/dashboard/AdminOverview';
 import { AdminDoctors } from './pages/dashboard/AdminDoctors';
@@ -58,6 +62,9 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/features" element={<FeaturesPage />} />
+        <Route path="/doctors" element={<DoctorsPage />} />
+        <Route path="/emergency" element={<EmergencyPage />} />
 
         {/* Patient Routes */}
         <Route
@@ -163,6 +170,14 @@ function App() {
           element={
             <ProtectedRoute requiredRole="DOCTOR">
               <DoctorPrescriptions />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/doctor/profile"
+          element={
+            <ProtectedRoute requiredRole="DOCTOR">
+              <DoctorProfile />
             </ProtectedRoute>
           }
         />

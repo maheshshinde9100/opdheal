@@ -59,15 +59,36 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest) {
-        User user = new User();
-        user.setUsername(registerRequest.getUsername());
-        user.setPassword(registerRequest.getPassword());
-        user.setEmail(registerRequest.getEmail());
-        user.setFirstName(registerRequest.getFirstName());
-        user.setLastName(registerRequest.getLastName());
-        user.setRole(registerRequest.getRole());
+        try {
+            User user = new User();
+            user.setUsername(registerRequest.getUsername());
+            user.setPassword(registerRequest.getPassword());
+            user.setEmail(registerRequest.getEmail());
+            user.setFirstName(registerRequest.getFirstName());
+            user.setLastName(registerRequest.getLastName());
+            user.setRole(registerRequest.getRole());
 
-        User savedUser = userService.registerUser(user);
-        return ResponseEntity.ok(savedUser);
+            User savedUser = userService.registerUser(user);
+
+            // Create Profile based on Role
+            if (savedUser.getRole() == User.Role.PATIENT) {
+                com.mahesh.opdheal.model.Patient patient = new com.mahesh.opdheal.model.Patient();
+                patient.setUserId(savedUser.getId());
+                patient.setPhoneNumber("Update required"); // Default placeholder
+                patient.setDateOfBirth(java.time.LocalDate.now()); // Default placeholder
+                patientRepository.save(patient);
+            } else if (savedUser.getRole() == User.Role.DOCTOR) {
+                com.mahesh.opdheal.model.Doctor doctor = new com.mahesh.opdheal.model.Doctor();
+                doctor.setUserId(savedUser.getId());
+                doctor.setSpecialization("Update required");
+                doctor.setPhoneNumber("Update required");
+                doctor.setLicenseNumber("TEMP-" + java.util.UUID.randomUUID().toString().substring(0, 8));
+                doctorRepository.save(doctor);
+            }
+
+            return ResponseEntity.ok(savedUser);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

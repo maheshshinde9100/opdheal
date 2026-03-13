@@ -29,5 +29,6 @@ public class Patient {
     private String emergencyContact;
     private List<String> allergies;
     private String bloodGroup;
+    private String weight;
     private String medicalHistory;
 }

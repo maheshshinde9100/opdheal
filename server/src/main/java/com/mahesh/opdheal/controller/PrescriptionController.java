@@ -1,5 +1,6 @@
 package com.mahesh.opdheal.controller;
 
+import com.mahesh.opdheal.dto.PrescriptionDto;
 import com.mahesh.opdheal.model.Prescription;
 import com.mahesh.opdheal.service.PrescriptionService;
 import jakarta.validation.Valid;
@@ -25,25 +26,25 @@ public class PrescriptionController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('DOCTOR')")
-    public ResponseEntity<List<Prescription>> getAllPrescriptions() {
+    public ResponseEntity<List<PrescriptionDto>> getAllPrescriptions() {
         return ResponseEntity.ok(prescriptionService.getAllPrescriptions());
     }
 
     @GetMapping("/patient/{patientId}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('DOCTOR') or @customSecurityExpression.hasUserId(authentication, #patientId)")
-    public ResponseEntity<List<Prescription>> getPrescriptionsByPatient(@PathVariable String patientId) {
+    @PreAuthorize("hasRole('ADMIN') or hasRole('DOCTOR') or hasRole('PATIENT')")
+    public ResponseEntity<List<PrescriptionDto>> getPrescriptionsByPatient(@PathVariable String patientId) {
         return ResponseEntity.ok(prescriptionService.getPrescriptionsByPatient(patientId));
     }
 
     @GetMapping("/doctor/{doctorId}")
     @PreAuthorize("hasRole('ADMIN') or @customSecurityExpression.hasUserId(authentication, #doctorId)")
-    public ResponseEntity<List<Prescription>> getPrescriptionsByDoctor(@PathVariable String doctorId) {
+    public ResponseEntity<List<PrescriptionDto>> getPrescriptionsByDoctor(@PathVariable String doctorId) {
         return ResponseEntity.ok(prescriptionService.getPrescriptionsByDoctor(doctorId));
     }
 
     @GetMapping("/appointment/{appointmentId}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('DOCTOR')")
-    public ResponseEntity<List<Prescription>> getPrescriptionsByAppointment(@PathVariable String appointmentId) {
+    public ResponseEntity<List<PrescriptionDto>> getPrescriptionsByAppointment(@PathVariable String appointmentId) {
         return ResponseEntity.ok(prescriptionService.getPrescriptionsByAppointment(appointmentId));
     }
 
