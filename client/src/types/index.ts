@@ -94,6 +94,11 @@ export interface Appointment {
     reasonForVisit?: string;
     notes?: string;
     createdAt?: string;
+
+    // DTO fields (enriched)
+    patientName?: string;
+    doctorName?: string;
+    doctorSpecialization?: string;
     updatedAt?: string;
 }
 
@@ -124,14 +129,22 @@ export interface Prescription {
     doctor?: Doctor;
     appointmentId?: string;
     appointment?: Appointment;
-    medicationName: string;
-    dosage: string;
-    frequency?: string;
-    duration?: string;
-    instructions?: string;
+    medicines: Array<{
+        name: string;
+        dosage: string;
+        frequency: string;
+        durationDays: number;
+    }>;
+    instructions: string;
+    notes?: string;
     prescriptionDate: string;
     createdAt?: string;
     updatedAt?: string;
+
+    // DTO fields (enriched)
+    patientName?: string;
+    doctorName?: string;
+    doctorSpecialization?: string;
 }
 
 // Bill Types — matches backend Bill model

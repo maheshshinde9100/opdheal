@@ -180,7 +180,7 @@ export const RegisterPage: React.FC = () => {
                                 name="firstName"
                                 value={formData.firstName}
                                 onChange={handleChange}
-                                placeholder="e.g. John"
+                                placeholder="e.g. Mahesh"
                                 className="h-12 rounded-xl"
                                 error={errors.firstName}
                                 required
@@ -190,7 +190,7 @@ export const RegisterPage: React.FC = () => {
                                 name="lastName"
                                 value={formData.lastName}
                                 onChange={handleChange}
-                                placeholder="e.g. Doe"
+                                placeholder="e.g. Shinde"
                                 className="h-12 rounded-xl"
                                 error={errors.lastName}
                                 required
@@ -203,7 +203,7 @@ export const RegisterPage: React.FC = () => {
                             name="email"
                             value={formData.email}
                             onChange={handleChange}
-                            placeholder="john@example.com"
+                            placeholder="mahesh@example.com"
                             className="h-12 rounded-xl"
                             error={errors.email}
                             leftIcon={<Mail size={18} className="text-neutral-400" />}
@@ -215,7 +215,7 @@ export const RegisterPage: React.FC = () => {
                             name="username"
                             value={formData.username}
                             onChange={handleChange}
-                            placeholder="johndoe123"
+                            placeholder="maheshshinde123"
                             className="h-12 rounded-xl"
                             error={errors.username}
                             leftIcon={<User size={18} className="text-neutral-400" />}

@@ -50,10 +50,10 @@ export const PatientPrescriptions: React.FC = () => {
     };
 
     const filteredPrescriptions = prescriptions.filter(p =>
-        p.medicationName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.doctor?.user?.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.doctor?.user?.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.dosage?.toLowerCase().includes(searchTerm.toLowerCase())
+        p.medicines?.some(m => m.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        p.doctorName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        p.doctorSpecialization?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        p.medicines?.some(m => m.dosage.toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
     const handleDownloadPDF = async (prescription: Prescription) => {
@@ -93,56 +93,45 @@ export const PatientPrescriptions: React.FC = () => {
             doc.setFontSize(13);
             doc.setFont('helvetica', 'bold');
             doc.setTextColor(30, 30, 30);
-            doc.text(`Dr. ${prescription.doctor?.user?.firstName || ''} ${prescription.doctor?.user?.lastName || ''}`, 16, 65);
+            doc.text(prescription.doctorName || 'Unknown Doctor', 16, 65);
             doc.setFontSize(10);
             doc.setFont('helvetica', 'normal');
             doc.setTextColor(100, 116, 139);
-            doc.text(prescription.doctor?.specialization || '', 16, 72);
+            doc.text(prescription.doctorSpecialization || '', 16, 72);
 
             // Divider
             doc.setDrawColor(226, 232, 240);
             doc.setLineWidth(0.4);
             doc.line(10, 85, pw - 10, 85);
 
-            // Section: Medication
+            // Section: Medication List
             doc.setFontSize(9);
             doc.setFont('helvetica', 'bold');
             doc.setTextColor(100, 116, 139);
-            doc.text('MEDICATION', 16, 95);
-            doc.setFontSize(16);
-            doc.setFont('helvetica', 'bold');
-            doc.setTextColor(37, 99, 235);
-            doc.text(prescription.medicationName || '', 16, 105);
+            doc.text('PRESCRIBED MEDICATIONS', 16, 95);
 
-            // Details grid
-            const detailsY = 115;
-            const details = [
-                { label: 'DOSAGE', value: prescription.dosage || '—' },
-                { label: 'FREQUENCY', value: prescription.frequency || '—' },
-                { label: 'DURATION', value: prescription.duration || '—' },
-            ];
+            let currentY = 105;
+            prescription.medicines.forEach((med, idx) => {
+                doc.setFontSize(12);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(37, 99, 235);
+                doc.text(`${idx + 1}. ${med.name}`, 16, currentY);
 
-            details.forEach((item, i) => {
-                const x = 16 + (i * 62);
-                doc.setFillColor(239, 246, 255);
-                doc.roundedRect(x - 2, detailsY - 6, 58, 20, 2, 2, 'F');
-                doc.setFontSize(8);
-                doc.setFont('helvetica', 'bold');
-                doc.setTextColor(100, 116, 139);
-                doc.text(item.label, x, detailsY);
-                doc.setFontSize(11);
-                doc.setFont('helvetica', 'bold');
-                doc.setTextColor(30, 30, 30);
-                doc.text(item.value, x, detailsY + 8);
+                doc.setFontSize(9);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(71, 85, 105);
+                doc.text(`Dosage: ${med.dosage} | Frequency: ${med.frequency} | Duration: ${med.durationDays} days`, 22, currentY + 6);
+                
+                currentY += 18;
             });
 
             // Instructions
             doc.setFillColor(255, 251, 235);
-            doc.roundedRect(10, 145, pw - 20, 30, 3, 3, 'F');
+            doc.roundedRect(10, currentY + 5, pw - 20, 30, 3, 3, 'F');
             doc.setFontSize(9);
             doc.setFont('helvetica', 'bold');
             doc.setTextColor(146, 64, 14);
-            doc.text('⚠ INSTRUCTIONS', 16, 155);
+            doc.text('⚠ INSTRUCTIONS', 16, currentY + 15);
             doc.setFontSize(10);
             doc.setFont('helvetica', 'normal');
             doc.setTextColor(92, 60, 0);
@@ -160,7 +149,7 @@ export const PatientPrescriptions: React.FC = () => {
             doc.setFont('helvetica', 'normal');
             doc.text('This is a digitally generated prescription from OPDHeal portal. Contact your doctor for queries.', pw / 2, 287, { align: 'center' });
 
-            doc.save(`Prescription_${prescription.medicationName}_${prescription.id}.pdf`);
+            doc.save(`Prescription_${prescription.id}.pdf`);
         } catch (err) {
             console.error('PDF generation failed', err);
         } finally {
@@ -265,33 +254,27 @@ export const PatientPrescriptions: React.FC = () => {
                         {filteredPrescriptions.map((p) => (
                             <div
                                 key={p.id}
-                                id={`rx-card-${p.id}`}
                                 className="bg-white rounded-2xl border border-neutral-100 hover:border-primary-200 shadow-sm hover:shadow-lg transition-all group overflow-hidden flex flex-col"
                             >
-                                {/* Card Top Bar */}
                                 <div className="h-1.5 bg-gradient-to-r from-primary-400 via-primary-600 to-indigo-600 w-full" />
-
                                 <div className="p-6 flex-1 flex flex-col gap-5">
-                                    {/* Header Row */}
                                     <div className="flex items-start justify-between gap-4">
                                         <div className="flex items-center gap-4">
                                             <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-500 to-indigo-600 flex items-center justify-center text-white shadow-md">
                                                 <Pill size={26} />
                                             </div>
                                             <div>
-                                                <h3 className="text-lg font-black text-neutral-900 leading-tight">{p.medicationName}</h3>
-                                                <div className="flex items-center gap-2 mt-1">
-                                                    <Badge variant="success" className="text-[10px] font-bold px-2 py-0.5">{p.dosage}</Badge>
-                                                    <span className="text-neutral-300 text-sm">•</span>
-                                                    <span className="text-xs font-semibold text-neutral-500">{p.duration}</span>
-                                                </div>
+                                                <h3 className="text-lg font-black text-neutral-900 leading-tight">
+                                                    {p.medicines && p.medicines.length > 0 ? p.medicines[0].name : 'Prescription'}
+                                                    {p.medicines && p.medicines.length > 1 && <span className="text-xs text-primary-500 ml-2">+{p.medicines.length - 1} more</span>}
+                                                </h3>
+                                                <p className="text-xs font-semibold text-neutral-500">{formatDate(p.prescriptionDate)}</p>
                                             </div>
                                         </div>
                                         <div className="flex gap-2">
                                             <button
                                                 onClick={() => setSelectedPrescription(p)}
                                                 className="w-9 h-9 rounded-xl border border-neutral-200 flex items-center justify-center text-neutral-500 hover:bg-neutral-50 hover:text-neutral-700 transition-colors"
-                                                title="View Details"
                                             >
                                                 <FileText size={16} />
                                             </button>
@@ -299,47 +282,38 @@ export const PatientPrescriptions: React.FC = () => {
                                                 onClick={() => handleDownloadPDF(p)}
                                                 disabled={downloading === String(p.id)}
                                                 className="w-9 h-9 rounded-xl border border-primary-200 bg-primary-50 flex items-center justify-center text-primary-600 hover:bg-primary-100 transition-colors disabled:opacity-50"
-                                                title="Download PDF"
                                             >
-                                                {downloading === String(p.id) ? (
-                                                    <RefreshCw size={15} className="animate-spin" />
-                                                ) : (
-                                                    <Download size={15} />
-                                                )}
+                                                {downloading === String(p.id) ? <RefreshCw size={15} className="animate-spin" /> : <Download size={15} />}
                                             </button>
                                         </div>
                                     </div>
 
-                                    {/* Details Grid */}
-                                    <div className="grid grid-cols-3 gap-3">
-                                        {[
-                                            { label: 'Frequency', value: p.frequency },
-                                            { label: 'Duration', value: p.duration },
-                                            { label: 'Issued', value: formatDate(p.prescriptionDate) },
-                                        ].map((item, i) => (
-                                            <div key={i} className="bg-neutral-50 rounded-xl p-3">
-                                                <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-0.5">{item.label}</p>
-                                                <p className="text-xs font-bold text-neutral-800">{item.value}</p>
+                                    <div className="space-y-3">
+                                        {p.medicines?.map((med, idx) => (
+                                            <div key={idx} className="bg-neutral-50 rounded-xl p-3 flex justify-between items-center border border-neutral-100">
+                                                <div>
+                                                    <p className="text-sm font-bold text-neutral-800">{med.name}</p>
+                                                    <p className="text-[10px] text-neutral-500 font-medium">{med.dosage} • {med.frequency}</p>
+                                                </div>
+                                                <Badge variant="primary" className="text-[9px] h-5">{med.durationDays} days</Badge>
                                             </div>
                                         ))}
                                     </div>
 
-                                    {/* Instructions */}
                                     {p.instructions && (
                                         <div className="flex items-start gap-2.5 bg-amber-50 border border-amber-100 rounded-xl p-3">
                                             <AlertCircle size={15} className="text-amber-600 mt-0.5 flex-shrink-0" />
-                                            <p className="text-xs font-semibold text-amber-800 leading-relaxed">{p.instructions}</p>
+                                            <p className="text-xs font-semibold text-amber-800 leading-relaxed truncate">{p.instructions}</p>
                                         </div>
                                     )}
                                 </div>
 
-                                {/* Footer */}
                                 <div className="border-t border-neutral-100 px-6 py-3 flex items-center justify-between bg-neutral-50/50">
                                     <div className="flex items-center gap-2 text-neutral-500">
                                         <User size={13} />
-                                        <span className="text-xs font-bold">Dr. {p.doctor?.user?.firstName} {p.doctor?.user?.lastName}</span>
-                                        {p.doctor?.specialization && (
-                                            <span className="text-[10px] text-neutral-400">• {p.doctor.specialization}</span>
+                                        <span className="text-xs font-bold">{p.doctorName || 'Unknown Doctor'}</span>
+                                        {p.doctorSpecialization && (
+                                            <span className="text-[10px] text-neutral-400">• {p.doctorSpecialization}</span>
                                         )}
                                     </div>
                                     <button
@@ -382,7 +356,7 @@ export const PatientPrescriptions: React.FC = () => {
                                 <div className="flex items-center justify-between">
                                     <div>
                                         <p className="text-primary-200 text-xs font-bold uppercase tracking-wider mb-1">Digital Prescription</p>
-                                        <h2 className="text-2xl font-black">{selectedPrescription.medicationName}</h2>
+                                        <h2 className="text-2xl font-black">{selectedPrescription.medicines?.[0]?.name || 'Prescription Details'}</h2>
                                     </div>
                                     <button
                                         onClick={() => setSelectedPrescription(null)}
@@ -394,16 +368,17 @@ export const PatientPrescriptions: React.FC = () => {
                             </div>
 
                             <div className="p-6 space-y-5">
-                                <div className="grid grid-cols-2 gap-4">
-                                    {[
-                                        { label: 'Dosage', value: selectedPrescription.dosage },
-                                        { label: 'Frequency', value: selectedPrescription.frequency },
-                                        { label: 'Duration', value: selectedPrescription.duration },
-                                        { label: 'Date Issued', value: formatDate(selectedPrescription.prescriptionDate) },
-                                    ].map((item, i) => (
-                                        <div key={i} className="bg-neutral-50 rounded-xl p-4">
-                                            <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-1">{item.label}</p>
-                                            <p className="text-sm font-bold text-neutral-900">{item.value}</p>
+                                <div className="space-y-3">
+                                    <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider px-1">Prescribed Medicines</p>
+                                    {selectedPrescription.medicines.map((med, idx) => (
+                                        <div key={idx} className="bg-neutral-50 rounded-xl p-4 flex justify-between items-center">
+                                            <div>
+                                                <p className="font-bold text-neutral-900">{med.name}</p>
+                                                <p className="text-xs text-neutral-500">{med.dosage} • {med.frequency}</p>
+                                            </div>
+                                            <div className="text-right">
+                                                <p className="text-xs font-bold text-primary-600">{med.durationDays} Days</p>
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
@@ -412,11 +387,11 @@ export const PatientPrescriptions: React.FC = () => {
                                     <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider mb-2">Prescribed By</p>
                                     <div className="flex items-center gap-3">
                                         <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center text-primary-600 font-black">
-                                            {selectedPrescription.doctor?.user?.firstName?.charAt(0)}
+                                            {selectedPrescription.doctorName?.charAt(0) || 'D'}
                                         </div>
                                         <div>
-                                            <p className="font-bold text-neutral-900">Dr. {selectedPrescription.doctor?.user?.firstName} {selectedPrescription.doctor?.user?.lastName}</p>
-                                            <p className="text-xs text-neutral-500">{selectedPrescription.doctor?.specialization}</p>
+                                            <p className="font-bold text-neutral-900">{selectedPrescription.doctorName}</p>
+                                            <p className="text-xs text-neutral-500">{selectedPrescription.doctorSpecialization}</p>
                                         </div>
                                     </div>
                                 </div>

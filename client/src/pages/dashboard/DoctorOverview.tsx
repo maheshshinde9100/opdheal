@@ -26,7 +26,7 @@ export const DoctorOverview: React.FC = () => {
         const loadData = async () => {
             try {
                 if (profileId) {
-                    const allAppts = await api.getDoctorAppointments(Number(profileId));
+                    const allAppts = await api.getDoctorAppointments(profileId);
                     setAppointments(allAppts.slice(0, 5));
 
                     const todayDateString = new Date().toISOString().split('T')[0];
