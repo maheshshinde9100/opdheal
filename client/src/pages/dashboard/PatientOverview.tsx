@@ -5,7 +5,6 @@ import {
     Pill,
     CreditCard,
     ArrowUpRight,
-    User,
     Video,
     Plus,
     ArrowRight,
@@ -18,11 +17,12 @@ import { Button } from '../../components/Button';
 import { DashboardLayout } from '../../components/layout/DashboardLayout';
 import api from '../../services/api';
 import { formatDate, formatTime } from '../../utils/helpers';
-import type { Appointment } from '../../types';
+import type { Appointment, Patient } from '../../types';
 
 export const PatientOverview: React.FC = () => {
     const [appointments, setAppointments] = useState<Appointment[]>([]);
     const [nextAppt, setNextAppt] = useState<Appointment | null>(null);
+    const [patient, setPatient] = useState<Patient | null>(null);
     const username = api.getUsername();
     const profileId = api.getProfileId();
 
@@ -31,7 +31,12 @@ export const PatientOverview: React.FC = () => {
             try {
                 let apptsData: Appointment[] = [];
                 if (profileId) {
-                    apptsData = await api.getAppointmentsByPatient(profileId);
+                    const [appts, patientData] = await Promise.all([
+                        api.getAppointmentsByPatient(profileId),
+                        api.getPatientById(profileId)
+                    ]);
+                    apptsData = appts;
+                    setPatient(patientData);
                 } else {
                     apptsData = await api.getAllAppointments();
                 }
@@ -60,13 +65,13 @@ export const PatientOverview: React.FC = () => {
     const statCards = [
         {
             label: 'Next Appointment',
-            value: nextAppt ? formatDate(nextAppt.appointmentDate || '') : 'None',
-            subValue: nextAppt?.doctor?.user ? `Dr. ${nextAppt.doctor.user.firstName}` : 'No upcoming',
+            value: nextAppt ? formatDate(nextAppt.appointmentDateTime?.split('T')[0] || '') : 'None',
+            subValue: nextAppt?.doctorName || 'No upcoming',
             icon: <Calendar className="text-primary-600" />, color: 'bg-primary-50'
         },
-        { label: 'Pending Bills', value: '$250.00', subValue: '2 overdue payments', icon: <CreditCard className="text-error-600" />, color: 'bg-error-50' },
-        { label: 'Active Prescriptions', value: '4 Drugs', subValue: 'Renew in 5 days', icon: <Pill className="text-success-600" />, color: 'bg-success-50' },
-        { label: 'Health Score', value: '88%', subValue: 'Excellent condition', icon: <Activity className="text-warning-600" />, color: 'bg-warning-50' },
+        { label: 'Pending Bills', value: '₹ 0', subValue: 'No pending payments', icon: <CreditCard className="text-error-600" />, color: 'bg-error-50' },
+        { label: 'Consultations', value: appointments.length.toString(), subValue: 'Active schedule', icon: <Pill className="text-success-600" />, color: 'bg-success-50' },
+        { label: 'Health Score', value: '100%', subValue: 'Excellent condition', icon: <Activity className="text-warning-600" />, color: 'bg-warning-50' },
     ];
 
     return (
@@ -131,13 +136,13 @@ export const PatientOverview: React.FC = () => {
                                             <div className="w-2 bg-primary-600"></div>
                                             <div className="flex-1 p-6 flex flex-col md:flex-row md:items-center justify-between gap-6">
                                                 <div className="flex items-center gap-4">
-                                                    <div className="w-14 h-14 rounded-2xl bg-neutral-100 flex items-center justify-center overflow-hidden border-2 border-white shadow-sm">
-                                                        <User className="text-neutral-400" size={30} />
+                                                    <div className="w-14 h-14 rounded-2xl bg-neutral-100 flex items-center justify-center overflow-hidden border-2 border-white shadow-sm font-black text-neutral-400">
+                                                        {appt.doctorName?.charAt(0) || 'D'}
                                                     </div>
                                                     <div>
-                                                        <h4 className="font-bold text-lg text-neutral-900">Dr. {appt.doctor?.user?.firstName} {appt.doctor?.user?.lastName}</h4>
+                                                        <h4 className="font-bold text-lg text-neutral-900">{appt.doctorName}</h4>
                                                         <div className="flex items-center gap-2 text-neutral-500 font-semibold text-sm">
-                                                            <Badge variant="primary" className="text-[10px]">{appt.doctor?.specialization}</Badge>
+                                                            <Badge variant="primary" className="text-[10px]">{appt.doctorSpecialization}</Badge>
                                                             <span>•</span>
                                                             <span className="flex items-center gap-1"><Clock size={14} /> {appt.appointmentDateTime ? formatTime(appt.appointmentDateTime.split('T')[1]?.slice(0, 5) ?? '') : '—'}</span>
                                                         </div>
@@ -181,14 +186,14 @@ export const PatientOverview: React.FC = () => {
                                 <div className="flex justify-between items-end border-b border-white/10 pb-4">
                                     <div>
                                         <div className="text-white/60 text-sm font-bold uppercase tracking-wider mb-1">Blood Type</div>
-                                        <div className="text-3xl font-extrabold font-poppins">A+ Positive</div>
+                                        <div className="text-3xl font-extrabold font-poppins">{patient?.bloodGroup || '—'}</div>
                                     </div>
                                     <div className="text-primary-300"><ArrowUpRight size={32} /></div>
                                 </div>
                                 <div className="flex justify-between items-end border-b border-white/10 pb-4">
                                     <div>
                                         <div className="text-white/60 text-sm font-bold uppercase tracking-wider mb-1">Weight</div>
-                                        <div className="text-3xl font-extrabold font-poppins">72.5 <span className="text-lg font-bold opacity-60">kg</span></div>
+                                        <div className="text-3xl font-extrabold font-poppins">{patient?.weight || '—'} <span className="text-lg font-bold opacity-60">kg</span></div>
                                     </div>
                                     <div className="text-success-400"><ArrowUpRight size={32} /></div>
                                 </div>

@@ -15,7 +15,6 @@ import {
     ChevronRight,
     Activity,
     Users,
-    Stethoscope,
     HeartPulse
 } from 'lucide-react';
 import api from '../../services/api';
@@ -74,6 +73,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, role
         { icon: <Users size={22} />, label: 'My Patients', path: '/doctor/patients' },
         { icon: <FileText size={22} />, label: 'Medical History', path: '/doctor/records' },
         { icon: <ClipboardList size={22} />, label: 'Prescriptions', path: '/doctor/prescriptions' },
+        { icon: <User size={22} />, label: 'Profile', path: '/doctor/profile' },
         { icon: <Settings size={22} />, label: 'Settings', path: '/doctor/settings' },
     ];
 

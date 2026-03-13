@@ -119,16 +119,16 @@ export const DoctorOverview: React.FC = () => {
                                                 <td className="px-6 py-4">
                                                     <div className="flex items-center gap-3">
                                                         <div className="w-9 h-9 bg-primary-100 rounded-full flex items-center justify-center text-primary-600 font-bold text-sm">
-                                                            {appt.patient?.user?.firstName?.charAt(0)}
+                                                            {appt.patientName?.charAt(0) || 'P'}
                                                         </div>
                                                         <div>
-                                                            <div className="font-bold text-neutral-900">{appt.patient?.user?.firstName} {appt.patient?.user?.lastName}</div>
-                                                            <div className="text-xs font-semibold text-neutral-400">ID: {appt.patient?.id}</div>
+                                                            <div className="font-bold text-neutral-900">{appt.patientName}</div>
+                                                            <div className="text-xs font-semibold text-neutral-400">ID: PT-{appt.patientId}</div>
                                                         </div>
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4">
-                                                    <div className="font-bold text-neutral-900">{formatTime(appt.appointmentTime)}</div>
+                                                    <div className="font-bold text-neutral-900">{formatTime(appt.appointmentDateTime?.split('T')[1]?.slice(0, 5) || '')}</div>
                                                     <div className="text-xs font-semibold text-neutral-400">30 min session</div>
                                                 </td>
                                                 <td className="px-6 py-4">
@@ -183,8 +183,8 @@ export const DoctorOverview: React.FC = () => {
                             <h3 className="text-xl font-bold text-neutral-900 px-2">Recent Patient Feedback</h3>
                             <div className="space-y-4">
                                 {[
-                                    { user: 'Emily R.', rating: 5, comment: 'Dr. John was very thorough and explained everything clearly.' },
-                                    { user: 'Michael K.', rating: 4, comment: 'Great service, but had to wait 10 minutes past my time.' }
+                                    { user: 'Mahesh S.', rating: 5, comment: 'Dr. Shinde was very thorough and explained everything clearly.' },
+                                    { user: 'Sanjay P.', rating: 4, comment: 'Great service, very professional staff.' }
                                 ].map((review, i) => (
                                     <div key={i} className="bg-white p-5 rounded-3xl border border-neutral-100 shadow-soft hover:shadow-md transition-shadow">
                                         <div className="flex items-center gap-2 mb-2 text-warning-500">

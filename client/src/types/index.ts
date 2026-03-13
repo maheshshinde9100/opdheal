@@ -37,11 +37,15 @@ export interface Patient {
     id: string;
     userId: string;
     user?: User;
+    firstName?: string;
+    lastName?: string;
+    email?: string;
     dateOfBirth?: string;
     gender?: 'MALE' | 'FEMALE' | 'OTHER';
     phoneNumber?: string;
     address?: string;
     bloodGroup?: string;
+    weight?: string;
     emergencyContact?: string;
     medicalHistory?: string;
     allergies?: string;
@@ -62,7 +66,14 @@ export interface Doctor {
     id: string;
     userId: string;
     user?: User;
+    firstName?: string;
+    lastName?: string;
+    email?: string;
     specialization: string;
+    licenseNumber?: string;
+    department?: string;
+    experienceYears?: number;
+    qualifications?: string[];
     qualification?: string;
     experience?: number;
     consultationFee?: number;
@@ -72,6 +83,8 @@ export interface Doctor {
     available?: boolean;
     rating?: number;
     totalReviews?: number;
+    averageRating?: number;
+    ratingCount?: number;
     createdAt?: string;
     updatedAt?: string;
 }

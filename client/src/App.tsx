@@ -16,6 +16,7 @@ import { DoctorPatients } from './pages/dashboard/DoctorPatients';
 import { DoctorSchedule } from './pages/dashboard/DoctorSchedule';
 import { DoctorRecords } from './pages/dashboard/DoctorRecords';
 import { DoctorPrescriptions } from './pages/dashboard/DoctorPrescriptions';
+import { DoctorProfile } from './pages/dashboard/DoctorProfile';
 import { DoctorSettings } from './pages/dashboard/DoctorSettings';
 import { AdminOverview } from './pages/dashboard/AdminOverview';
 import { AdminDoctors } from './pages/dashboard/AdminDoctors';
@@ -163,6 +164,14 @@ function App() {
           element={
             <ProtectedRoute requiredRole="DOCTOR">
               <DoctorPrescriptions />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/doctor/profile"
+          element={
+            <ProtectedRoute requiredRole="DOCTOR">
+              <DoctorProfile />
             </ProtectedRoute>
           }
         />

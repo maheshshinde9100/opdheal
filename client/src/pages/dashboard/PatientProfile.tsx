@@ -5,10 +5,53 @@ import { Card } from '../../components/Card';
 import { Button } from '../../components/Button';
 import { Input } from '../../components/Input';
 import api from '../../services/api';
+import type { Patient } from '../../types';
 
 export const PatientProfile: React.FC = () => {
     const [isEditing, setIsEditing] = useState(false);
+    const [patient, setPatient] = useState<Patient | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [formData, setFormData] = useState<Partial<Patient>>({});
+
     const username = api.getUsername();
+    const profileId = api.getProfileId();
+
+    React.useEffect(() => {
+        if (profileId) {
+            loadPatientData();
+        }
+    }, [profileId]);
+
+    const loadPatientData = async () => {
+        try {
+            const data = await api.getPatientById(profileId!);
+            setPatient(data);
+            setFormData(data);
+        } catch (error) {
+            console.error("Failed to fetch patient data", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleSave = async () => {
+        if (!profileId) return;
+        try {
+            const updated = await api.updatePatient(profileId, formData);
+            setPatient(updated);
+            setIsEditing(false);
+        } catch (error) {
+            console.error("Failed to update patient data", error);
+        }
+    };
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    if (isLoading && profileId) {
+        return <DashboardLayout role="PATIENT"><div className="p-20 text-center font-bold text-neutral-400 italic">Synchronizing Profile...</div></DashboardLayout>;
+    }
 
     return (
         <DashboardLayout role="PATIENT">
@@ -16,20 +59,22 @@ export const PatientProfile: React.FC = () => {
                 <div className="flex flex-col md:flex-row md:items-end gap-8 pb-4">
                     <div className="relative group">
                         <div className="w-40 h-40 rounded-[40px] bg-gradient-to-br from-primary-500 to-indigo-600 border-8 border-white dark:border-neutral-800 shadow-2xl flex items-center justify-center text-white text-6xl font-black transition-transform group-hover:scale-105">
-                            {username?.charAt(0).toUpperCase()}
+                            {patient?.firstName?.charAt(0) || username?.charAt(0).toUpperCase()}
                         </div>
                         <button className="absolute bottom-2 right-2 p-3 bg-white dark:bg-neutral-800 rounded-2xl shadow-xl border border-neutral-100 dark:border-neutral-700 text-primary-600 hover:scale-110 transition-transform">
                             <Camera size={20} />
                         </button>
                     </div>
                     <div className="flex-1 space-y-2">
-                        <h1 className="text-4xl font-black text-neutral-900 dark:text-white">{username}</h1>
+                        <h1 className="text-4xl font-black text-neutral-900 dark:text-white capitalize">
+                            {patient ? `${patient.firstName} ${patient.lastName}` : username}
+                        </h1>
                         <p className="text-neutral-500 font-bold flex items-center gap-2 tracking-widest uppercase text-xs">
                             <Shield size={14} className="text-success-500" /> Verified Patient Profile
                         </p>
                     </div>
                     <Button
-                        onClick={() => setIsEditing(!isEditing)}
+                        onClick={isEditing ? handleSave : () => setIsEditing(true)}
                         className={`h-12 px-8 rounded-2xl font-black transition-all ${isEditing ? 'bg-success-500 text-white' : 'btn-primary'}`}
                     >
                         {isEditing ? 'Save Changes' : 'Edit Profile'}
@@ -42,25 +87,33 @@ export const PatientProfile: React.FC = () => {
                             <h3 className="text-2xl font-black mb-10 dark:text-white">Personal Information</h3>
                             <div className="grid md:grid-cols-2 gap-8">
                                 <div className="space-y-3">
-                                    <label className="text-xs font-black text-neutral-400 uppercase tracking-widest pl-1">Full Name</label>
-                                    <Input defaultValue={username || ''} disabled={!isEditing} className="h-14 font-bold rounded-2xl border-neutral-100 dark:border-neutral-800" />
+                                    <label className="text-xs font-black text-neutral-400 uppercase tracking-widest pl-1">First Name</label>
+                                    <Input name="firstName" value={formData.firstName || ''} onChange={handleChange} disabled={!isEditing} className="h-14 font-bold rounded-2xl border-neutral-100 dark:border-neutral-800" />
+                                </div>
+                                <div className="space-y-3">
+                                    <label className="text-xs font-black text-neutral-400 uppercase tracking-widest pl-1">Last Name</label>
+                                    <Input name="lastName" value={formData.lastName || ''} onChange={handleChange} disabled={!isEditing} className="h-14 font-bold rounded-2xl border-neutral-100 dark:border-neutral-800" />
                                 </div>
                                 <div className="space-y-3">
                                     <label className="text-xs font-black text-neutral-400 uppercase tracking-widest pl-1">Email Address</label>
-                                    <Input defaultValue="mahesh@example.com" disabled={!isEditing} className="h-14 font-bold rounded-2xl border-neutral-100 dark:border-neutral-800" />
+                                    <Input name="email" value={formData.email || ''} onChange={handleChange} disabled={!isEditing} className="h-14 font-bold rounded-2xl border-neutral-100 dark:border-neutral-800" />
                                 </div>
                                 <div className="space-y-3">
                                     <label className="text-xs font-black text-neutral-400 uppercase tracking-widest pl-1">Phone Number</label>
-                                    <Input defaultValue="+91 9876543210" disabled={!isEditing} className="h-14 font-bold rounded-2xl border-neutral-100 dark:border-neutral-800" />
+                                    <Input name="phoneNumber" value={formData.phoneNumber || ''} onChange={handleChange} disabled={!isEditing} className="h-14 font-bold rounded-2xl border-neutral-100 dark:border-neutral-800" />
                                 </div>
                                 <div className="space-y-3">
                                     <label className="text-xs font-black text-neutral-400 uppercase tracking-widest pl-1">Date of Birth</label>
-                                    <Input type="date" defaultValue="1995-08-15" disabled={!isEditing} className="h-14 font-bold rounded-2xl border-neutral-100 dark:border-neutral-800" />
+                                    <Input type="date" name="dateOfBirth" value={formData.dateOfBirth || ''} onChange={handleChange} disabled={!isEditing} className="h-14 font-bold rounded-2xl border-neutral-100 dark:border-neutral-800" />
+                                </div>
+                                <div className="space-y-3">
+                                    <label className="text-xs font-black text-neutral-400 uppercase tracking-widest pl-1">Gender</label>
+                                    <Input name="gender" value={formData.gender || ''} onChange={handleChange} disabled={!isEditing} className="h-14 font-bold rounded-2xl border-neutral-100 dark:border-neutral-800" />
                                 </div>
                             </div>
                             <div className="mt-10 space-y-3">
                                 <label className="text-xs font-black text-neutral-400 uppercase tracking-widest pl-1">Address</label>
-                                <Input defaultValue="Phase 2, Hinjewadi, Pune, Maharashtra" disabled={!isEditing} className="h-14 font-bold rounded-2xl border-neutral-100 dark:border-neutral-800" />
+                                <Input name="address" value={formData.address || ''} onChange={handleChange} disabled={!isEditing} className="h-14 font-bold rounded-2xl border-neutral-100 dark:border-neutral-800" />
                             </div>
                         </Card>
 
@@ -69,15 +122,15 @@ export const PatientProfile: React.FC = () => {
                             <div className="grid md:grid-cols-3 gap-6">
                                 <div className="p-5 bg-primary-50 dark:bg-primary-900/10 rounded-3xl border border-primary-100 dark:border-primary-900/20">
                                     <p className="text-[10px] font-black text-primary-500 uppercase tracking-widest mb-1">Blood Group</p>
-                                    <p className="text-2xl font-black text-primary-900 dark:text-primary-100">B+</p>
+                                    <Input name="bloodGroup" value={formData.bloodGroup || ''} onChange={handleChange} disabled={!isEditing} className="bg-transparent border-none p-0 h-auto font-black text-2xl text-primary-900 dark:text-primary-100" />
                                 </div>
                                 <div className="p-5 bg-error-50 dark:bg-error-900/10 rounded-3xl border border-error-100 dark:border-error-900/20">
                                     <p className="text-[10px] font-black text-error-500 uppercase tracking-widest mb-1">Allergies</p>
-                                    <p className="text-lg font-black text-error-900 dark:text-error-100">Penicillin, Pollen</p>
+                                    <Input name="allergies" value={formData.allergies || ''} onChange={handleChange} disabled={!isEditing} className="bg-transparent border-none p-0 h-auto font-black text-lg text-error-900 dark:text-error-100" />
                                 </div>
                                 <div className="p-5 bg-warning-50 dark:bg-warning-900/10 rounded-3xl border border-warning-100 dark:border-warning-900/20">
-                                    <p className="text-[10px] font-black text-warning-500 uppercase tracking-widest mb-1">Diabetes</p>
-                                    <p className="text-2xl font-black text-warning-900 dark:text-warning-100">Type II</p>
+                                    <p className="text-[10px] font-black text-warning-500 uppercase tracking-widest mb-1">Medical History</p>
+                                    <Input name="medicalHistory" value={formData.medicalHistory || ''} onChange={handleChange} disabled={!isEditing} className="bg-transparent border-none p-0 h-auto font-black text-lg text-warning-900 dark:text-warning-100" />
                                 </div>
                             </div>
                         </Card>
