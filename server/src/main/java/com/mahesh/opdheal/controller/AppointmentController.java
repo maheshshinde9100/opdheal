@@ -1,5 +1,6 @@
 package com.mahesh.opdheal.controller;
 
+import com.mahesh.opdheal.dto.AppointmentDto;
 import com.mahesh.opdheal.model.Appointment;
 import com.mahesh.opdheal.service.AppointmentService;
 import jakarta.validation.Valid;
@@ -27,31 +28,31 @@ public class AppointmentController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('DOCTOR')")
-    public ResponseEntity<List<Appointment>> getAllAppointments() {
+    public ResponseEntity<List<AppointmentDto>> getAllAppointments() {
         return ResponseEntity.ok(appointmentService.getAllAppointments());
     }
 
     @GetMapping("/patient/{patientId}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('DOCTOR') or @customSecurityExpression.hasUserId(authentication, #patientId)")
-    public ResponseEntity<List<Appointment>> getAppointmentsByPatient(@PathVariable String patientId) {
+    public ResponseEntity<List<AppointmentDto>> getAppointmentsByPatient(@PathVariable String patientId) {
         return ResponseEntity.ok(appointmentService.getAppointmentsByPatient(patientId));
     }
 
     @GetMapping("/doctor/{doctorId}")
     @PreAuthorize("hasRole('ADMIN') or @customSecurityExpression.hasUserId(authentication, #doctorId)")
-    public ResponseEntity<List<Appointment>> getAppointmentsByDoctor(@PathVariable String doctorId) {
+    public ResponseEntity<List<AppointmentDto>> getAppointmentsByDoctor(@PathVariable String doctorId) {
         return ResponseEntity.ok(appointmentService.getAppointmentsByDoctor(doctorId));
     }
 
     @GetMapping("/status/{status}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('DOCTOR')")
-    public ResponseEntity<List<Appointment>> getAppointmentsByStatus(@PathVariable Appointment.Status status) {
+    public ResponseEntity<List<AppointmentDto>> getAppointmentsByStatus(@PathVariable Appointment.Status status) {
         return ResponseEntity.ok(appointmentService.getAppointmentsByStatus(status));
     }
 
     @GetMapping("/daterange")
     @PreAuthorize("hasRole('ADMIN') or hasRole('DOCTOR')")
-    public ResponseEntity<List<Appointment>> getAppointmentsByDateRange(
+    public ResponseEntity<List<AppointmentDto>> getAppointmentsByDateRange(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end) {
         return ResponseEntity.ok(appointmentService.getAppointmentsByDateRange(start, end));

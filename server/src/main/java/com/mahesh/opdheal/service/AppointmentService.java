@@ -2,7 +2,11 @@ package com.mahesh.opdheal.service;
 
 import com.mahesh.opdheal.exception.ResourceNotFoundException;
 import com.mahesh.opdheal.model.Appointment;
+import com.mahesh.opdheal.dto.AppointmentDto;
 import com.mahesh.opdheal.repository.AppointmentRepository;
+import com.mahesh.opdheal.repository.DoctorRepository;
+import com.mahesh.opdheal.repository.PatientRepository;
+import com.mahesh.opdheal.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,34 +19,78 @@ public class AppointmentService {
 
     @Autowired
     private AppointmentRepository appointmentRepository;
+    @Autowired
+    private PatientRepository patientRepository;
+    @Autowired
+    private DoctorRepository doctorRepository;
+    @Autowired
+    private UserRepository userRepository;
+
+    public AppointmentDto toDto(Appointment appointment) {
+        AppointmentDto dto = new AppointmentDto();
+        dto.setId(appointment.getId());
+        dto.setPatientId(appointment.getPatientId());
+        dto.setDoctorId(appointment.getDoctorId());
+        dto.setAppointmentDateTime(appointment.getAppointmentDateTime());
+        dto.setReason(appointment.getReason());
+        dto.setStatus(appointment.getStatus());
+        dto.setNotes(appointment.getNotes());
+
+        // Fetch Patient Name
+        patientRepository.findById(appointment.getPatientId()).ifPresent(p -> {
+            userRepository.findById(p.getUserId()).ifPresent(u -> {
+                dto.setPatientName(u.getFirstName() + " " + u.getLastName());
+            });
+        });
+
+        // Fetch Doctor Name and Specialization
+        doctorRepository.findById(appointment.getDoctorId()).ifPresent(d -> {
+            dto.setDoctorSpecialization(d.getSpecialization());
+            userRepository.findById(d.getUserId()).ifPresent(u -> {
+                dto.setDoctorName("Dr. " + u.getFirstName() + " " + u.getLastName());
+            });
+        });
+
+        return dto;
+    }
 
     public Appointment createAppointment(Appointment appointment) {
         appointment.setCreatedAt(LocalDateTime.now());
         return appointmentRepository.save(appointment);
     }
 
-    public List<Appointment> getAllAppointments() {
-        return appointmentRepository.findAll();
+    public List<AppointmentDto> getAllAppointments() {
+        return appointmentRepository.findAll().stream()
+                .map(this::toDto)
+                .toList();
     }
 
     public Optional<Appointment> getAppointmentById(String id) {
         return appointmentRepository.findById(id);
     }
 
-    public List<Appointment> getAppointmentsByPatient(String patientId) {
-        return appointmentRepository.findByPatientId(patientId);
+    public List<AppointmentDto> getAppointmentsByPatient(String patientId) {
+        return appointmentRepository.findByPatientId(patientId).stream()
+                .map(this::toDto)
+                .toList();
     }
 
-    public List<Appointment> getAppointmentsByDoctor(String doctorId) {
-        return appointmentRepository.findByDoctorId(doctorId);
+    public List<AppointmentDto> getAppointmentsByDoctor(String doctorId) {
+        return appointmentRepository.findByDoctorId(doctorId).stream()
+                .map(this::toDto)
+                .toList();
     }
 
-    public List<Appointment> getAppointmentsByDateRange(LocalDateTime start, LocalDateTime end) {
-        return appointmentRepository.findByAppointmentDateTimeBetween(start, end);
+    public List<AppointmentDto> getAppointmentsByDateRange(LocalDateTime start, LocalDateTime end) {
+        return appointmentRepository.findByAppointmentDateTimeBetween(start, end).stream()
+                .map(this::toDto)
+                .toList();
     }
 
-    public List<Appointment> getAppointmentsByStatus(Appointment.Status status) {
-        return appointmentRepository.findByStatus(status);
+    public List<AppointmentDto> getAppointmentsByStatus(Appointment.Status status) {
+        return appointmentRepository.findByStatus(status).stream()
+                .map(this::toDto)
+                .toList();
     }
 
     public Appointment updateAppointment(String id, Appointment appointmentDetails) {
