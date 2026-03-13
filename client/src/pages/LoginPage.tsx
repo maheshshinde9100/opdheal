@@ -43,44 +43,40 @@ export const LoginPage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen flex bg-white font-inter">
+        <div className="min-h-screen flex font-inter" style={{ background: 'var(--bg-main)' }}>
             {/* Left Side: Visual/Branding */}
-            <div className="hidden lg:flex w-1/2 bg-primary-600 relative overflow-hidden items-center justify-center">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary-700 to-indigo-900 opacity-90"></div>
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20"></div>
-
-                {/* Decorative Blobs */}
-                <div className="absolute top-0 left-0 w-96 h-96 bg-primary-400 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2 opacity-30"></div>
-                <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-indigo-500 rounded-full blur-[120px] translate-x-1/3 translate-y-1/3 opacity-30"></div>
+            <div className="hidden lg:flex w-1/2 bg-slate-900 relative overflow-hidden items-center justify-center">
+                <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-950 opacity-90"></div>
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
 
                 <div className="relative z-10 p-16 text-white max-w-xl">
                     <Link to="/" className="flex items-center gap-3 mb-12 group">
-                        <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center group-hover:rotate-12 transition-transform shadow-xl">
-                            <Activity className="w-8 h-8 text-primary-600" />
+                        <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center shadow-md">
+                            <Activity className="w-6 h-6 text-white" />
                         </div>
-                        <span className="text-4xl font-extrabold tracking-tight">OPDHeal</span>
+                        <span className="text-3xl font-bold tracking-tight">OPDHeal Clinical</span>
                     </Link>
 
-                    <h1 className="text-5xl font-bold mb-8 leading-tight">
+                    <h1 className="text-4xl font-bold mb-6 leading-tight">
                         Secure Access to <br />
-                        <span className="text-primary-200">Modern Healthcare</span>
+                        <span className="text-blue-400">Patient Management</span>
                     </h1>
 
                     <div className="space-y-6">
                         <div className="flex items-start gap-4">
-                            <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0 backdrop-blur-md border border-white/20">
-                                <ShieldCheck className="text-primary-200" />
+                            <div className="w-10 h-10 bg-slate-800 rounded-md flex items-center justify-center flex-shrink-0 border border-slate-700">
+                                <ShieldCheck className="text-blue-400" />
                             </div>
-                            <p className="text-lg text-primary-50 leading-snug">
+                            <p className="text-lg text-slate-300 leading-snug">
                                 End-to-end encrypted medical records and communication.
                             </p>
                         </div>
                         <div className="flex items-start gap-4">
-                            <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0 backdrop-blur-md border border-white/20">
-                                <UserCheck className="text-primary-200" />
+                            <div className="w-10 h-10 bg-slate-800 rounded-md flex items-center justify-center flex-shrink-0 border border-slate-700">
+                                <UserCheck className="text-blue-400" />
                             </div>
-                            <p className="text-lg text-primary-50 leading-snug">
-                                Multi-factor authentication to keep your health data private.
+                            <p className="text-lg text-slate-300 leading-snug">
+                                Strict access controls to keep health data private and HIPAA compliant.
                             </p>
                         </div>
                     </div>
@@ -101,19 +97,19 @@ export const LoginPage: React.FC = () => {
             </div>
 
             {/* Right Side: Login Form */}
-            <div className="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-16">
-                <div className="w-full max-w-md space-y-10 animate-fade-in">
-                    <div className="space-y-4">
-                        <div className="lg:hidden flex justify-center mb-8">
-                            <Activity className="w-12 h-12 text-primary-600" />
+            <div className="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-16" style={{ background: 'var(--bg-card)' }}>
+                <div className="w-full max-w-md space-y-8">
+                    <div className="space-y-2">
+                        <div className="lg:hidden flex justify-center mb-6">
+                            <Activity className="w-10 h-10 text-blue-600" />
                         </div>
-                        <h2 className="text-4xl font-extrabold text-neutral-900 tracking-tight">Welcome Back</h2>
-                        <p className="text-lg text-neutral-500">Please enter your details to sign in.</p>
+                        <h2 className="text-3xl font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>System Login</h2>
+                        <p className="text-base font-medium" style={{ color: 'var(--text-secondary)' }}>Please enter your credentials to authenticate.</p>
                     </div>
 
                     {error && (
-                        <div className="p-4 bg-error-50 border border-error-100 rounded-xl animate-shake">
-                            <p className="text-error-600 font-medium text-sm flex items-center gap-2">
+                        <div className="p-4 bg-rose-50 border border-rose-100 rounded-xl dark:bg-rose-900/10 dark:border-rose-900/20">
+                            <p className="text-rose-600 font-medium text-sm flex items-center gap-2">
                                 <Activity className="w-4 h-4" /> {error}
                             </p>
                         </div>
@@ -132,7 +128,7 @@ export const LoginPage: React.FC = () => {
                                 required
                             />
 
-                            <div className="space-y-2">
+                            <div className="space-y-3">
                                 <Input
                                     label="Password"
                                     type="password"
@@ -140,7 +136,7 @@ export const LoginPage: React.FC = () => {
                                     value={formData.password}
                                     onChange={handleChange}
                                     placeholder="••••••••"
-                                    className="h-14 border-neutral-200 focus:border-primary-500 rounded-xl"
+                                    className="h-12 border-slate-300 focus:border-blue-600 rounded-lg"
                                     required
                                 />
                                 <div className="flex items-center justify-between">
@@ -155,33 +151,33 @@ export const LoginPage: React.FC = () => {
 
                         <Button
                             type="submit"
-                            className="w-full h-14 bg-primary-600 hover:bg-primary-700 text-white rounded-xl text-lg font-bold shadow-primary transition-all active:scale-[0.98]"
+                            className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-base font-semibold shadow-sm transition-colors"
                             isLoading={isLoading}
                         >
-                            Sign In To Account
-                            <ArrowRight className="ml-2 w-5 h-5" />
+                            Authenticate
+                            <ArrowRight className="ml-2 w-4 h-4" />
                         </Button>
 
-                        <div className="relative py-4">
+                        <div className="relative py-2">
                             <div className="absolute inset-0 flex items-center">
-                                <div className="w-full border-t border-neutral-100"></div>
+                                <div className="w-full border-t" style={{ borderColor: 'var(--border-default)' }}></div>
                             </div>
-                            <div className="relative flex justify-center text-sm uppercase">
-                                <span className="bg-white px-4 text-neutral-400 font-bold">New to OPDHeal?</span>
+                            <div className="relative flex justify-center text-xs uppercase">
+                                <span className="px-4 font-semibold tracking-wider" style={{ background: 'var(--bg-card)', color: 'var(--text-muted)' }}>New Patient?</span>
                             </div>
                         </div>
 
                         <Link to="/register" className="block text-center">
-                            <Button variant="outline" className="w-full h-14 border-2 border-neutral-200 hover:border-primary-500 rounded-xl text-lg font-bold text-neutral-700 hover:text-primary-600 transition-all">
-                                Create an Account
+                            <Button variant="outline" className="w-full h-12 border border-slate-300 hover:border-slate-400 hover:bg-slate-50 rounded-lg text-base font-semibold text-slate-700 transition-colors">
+                                Register Patient Profile
                             </Button>
                         </Link>
                     </form>
 
                     <div className="pt-10 text-center">
-                        <p className="text-neutral-400 text-sm">
+                        <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
                             By signing in, you agree to our <br />
-                            <a href="#" className="underline font-bold hover:text-neutral-900">Terms of Service</a> and <a href="#" className="underline font-bold hover:text-neutral-900">Privacy Policy</a>.
+                            <a href="#" className="underline font-semibold hover:text-blue-600">Terms of Service</a> and <a href="#" className="underline font-semibold hover:text-blue-600">Privacy Policy</a>.
                         </p>
                     </div>
                 </div>
