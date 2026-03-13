@@ -30,7 +30,7 @@ public class BillController {
     }
 
     @GetMapping("/patient/{patientId}")
-    @PreAuthorize("hasRole('ADMIN') or @customSecurityExpression.hasUserId(authentication, #patientId)")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('DOCTOR') or hasRole('PATIENT')")
     public ResponseEntity<List<Bill>> getBillsByPatient(@PathVariable String patientId) {
         return ResponseEntity.ok(billService.getBillsByPatient(patientId));
     }
