@@ -14,6 +14,19 @@ import type {
     PatientHistoryDto,
 } from '../types';
 
+export interface PaymentRequestDto {
+    amount: number;
+    patientId: string;
+    appointmentId: string;
+}
+
+export interface PaymentResponseDto {
+    orderId: string;
+    currency: string;
+    amount: number;
+    razorpayKeyId: string;
+}
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
 
 class ApiService {
@@ -578,6 +591,16 @@ class ApiService {
             headers: this.getHeaders(),
         });
         return this.handleResponse<Appointment>(response);
+    }
+
+    // Payment API
+    async createPaymentOrder(data: PaymentRequestDto): Promise<PaymentResponseDto> {
+        const response = await fetch(`${API_BASE_URL}/api/payments/create-order`, {
+            method: 'POST',
+            headers: this.getHeaders(),
+            body: JSON.stringify(data),
+        });
+        return this.handleResponse<PaymentResponseDto>(response);
     }
 }
 

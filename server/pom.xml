@@ -63,6 +63,13 @@
 			<version>2.6.0</version>
 		</dependency>
 
+		<!-- Razorpay Payment Gateway -->
+		<dependency>
+			<groupId>com.razorpay</groupId>
+			<artifactId>razorpay-java</artifactId>
+			<version>1.4.4</version>
+		</dependency>
+
 		<!-- JWT dependencies updated for Spring Boot 3 -->
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
