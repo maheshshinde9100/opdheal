@@ -18,7 +18,6 @@ import {
     HeartPulse
 } from 'lucide-react';
 import api from '../../services/api';
-import { ThemeToggle } from '../ThemeToggle';
 
 interface SidebarItemProps {
     icon: React.ReactNode;
@@ -32,13 +31,12 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ icon, label, path, isActive, 
     <Link
         to={path}
         onClick={onClick}
-        className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-sm font-semibold group ${isActive
-            ? 'bg-blue-600 text-white shadow-sm'
-            : 'hover:bg-blue-50 dark:hover:bg-blue-900/20'
+        className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all text-sm font-medium group ${isActive
+            ? 'bg-teal-600 text-white shadow-sm'
+            : 'text-gray-600 hover:bg-teal-50 hover:text-teal-700'
             }`}
-        style={isActive ? {} : { color: 'var(--text-secondary)' }}
     >
-        <span className={`transition-transform duration-200 ${isActive ? '' : 'group-hover:text-blue-600'}`}>
+        <span className={`transition-transform duration-200`}>
             {icon}
         </span>
         <span>{label}</span>
@@ -58,33 +56,33 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, role
     const username = api.getUsername();
 
     const patientMenuItems = [
-        { icon: <LayoutDashboard size={22} />, label: 'Overview', path: '/patient/dashboard' },
-        { icon: <Calendar size={22} />, label: 'Appointments', path: '/patient/appointments' },
-        { icon: <FileText size={22} />, label: 'Medical Records', path: '/patient/records' },
-        { icon: <ClipboardList size={22} />, label: 'Prescriptions', path: '/patient/prescriptions' },
-        { icon: <CreditCard size={22} />, label: 'Billing', path: '/patient/billing' },
-        { icon: <Users size={22} />, label: 'Find Doctors', path: '/patient/doctors' },
-        { icon: <User size={22} />, label: 'Profile', path: '/patient/profile' },
-        { icon: <Settings size={22} />, label: 'Settings', path: '/patient/settings' },
+        { icon: <LayoutDashboard size={20} />, label: 'Overview', path: '/patient/dashboard' },
+        { icon: <Calendar size={20} />, label: 'Appointments', path: '/patient/appointments' },
+        { icon: <FileText size={20} />, label: 'Medical Records', path: '/patient/records' },
+        { icon: <ClipboardList size={20} />, label: 'Prescriptions', path: '/patient/prescriptions' },
+        { icon: <CreditCard size={20} />, label: 'Billing', path: '/patient/billing' },
+        { icon: <Users size={20} />, label: 'Find Doctors', path: '/patient/doctors' },
+        { icon: <User size={20} />, label: 'Profile', path: '/patient/profile' },
+        { icon: <Settings size={20} />, label: 'Settings', path: '/patient/settings' },
     ];
 
     const doctorMenuItems = [
-        { icon: <LayoutDashboard size={22} />, label: 'Dashboard', path: '/doctor/dashboard' },
-        { icon: <Calendar size={22} />, label: 'Schedule', path: '/doctor/schedule' },
-        { icon: <Users size={22} />, label: 'My Patients', path: '/doctor/patients' },
-        { icon: <FileText size={22} />, label: 'Medical History', path: '/doctor/records' },
-        { icon: <ClipboardList size={22} />, label: 'Prescriptions', path: '/doctor/prescriptions' },
-        { icon: <User size={22} />, label: 'Profile', path: '/doctor/profile' },
-        { icon: <Settings size={22} />, label: 'Settings', path: '/doctor/settings' },
+        { icon: <LayoutDashboard size={20} />, label: 'Dashboard', path: '/doctor/dashboard' },
+        { icon: <Calendar size={20} />, label: 'Schedule', path: '/doctor/schedule' },
+        { icon: <Users size={20} />, label: 'My Patients', path: '/doctor/patients' },
+        { icon: <FileText size={20} />, label: 'Medical History', path: '/doctor/records' },
+        { icon: <ClipboardList size={20} />, label: 'Prescriptions', path: '/doctor/prescriptions' },
+        { icon: <User size={20} />, label: 'Profile', path: '/doctor/profile' },
+        { icon: <Settings size={20} />, label: 'Settings', path: '/doctor/settings' },
     ];
 
     const adminMenuItems = [
-        { icon: <LayoutDashboard size={22} />, label: 'Control Panel', path: '/admin/dashboard' },
-        { icon: <HeartPulse size={22} />, label: 'Doctors', path: '/admin/doctors' },
-        { icon: <Users size={22} />, label: 'Patients', path: '/admin/patients' },
-        { icon: <Calendar size={22} />, label: 'Appointments', path: '/admin/appointments' },
-        { icon: <CreditCard size={22} />, label: 'Financials', path: '/admin/billing' },
-        { icon: <Settings size={22} />, label: 'System Settings', path: '/admin/settings' },
+        { icon: <LayoutDashboard size={20} />, label: 'Control Panel', path: '/admin/dashboard' },
+        { icon: <HeartPulse size={20} />, label: 'Doctors', path: '/admin/doctors' },
+        { icon: <Users size={20} />, label: 'Patients', path: '/admin/patients' },
+        { icon: <Calendar size={20} />, label: 'Appointments', path: '/admin/appointments' },
+        { icon: <CreditCard size={20} />, label: 'Financials', path: '/admin/billing' },
+        { icon: <Settings size={20} />, label: 'System Settings', path: '/admin/settings' },
     ];
 
     const menuItems = role === 'PATIENT' ? patientMenuItems : role === 'DOCTOR' ? doctorMenuItems : adminMenuItems;
@@ -95,34 +93,36 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, role
     };
 
     return (
-        <div className="min-h-screen flex transition-colors duration-300" style={{ background: 'var(--bg-main)' }}>
+        <div className="min-h-screen flex bg-gray-50">
             {/* Sidebar Overlay */}
             {isSidebarOpen && (
                 <div
-                    className="fixed inset-0 bg-black/60 z-40 lg:hidden backdrop-blur-sm animate-fade-in"
+                    className="fixed inset-0 bg-black/50 z-40 lg:hidden"
                     onClick={() => setIsSidebarOpen(false)}
                 />
             )}
 
             {/* Sidebar */}
             <aside className={`
-                fixed inset-y-0 left-0 z-50 w-72 border-r transform transition-transform duration-300 lg:translate-x-0 lg:static flex-shrink-0
+                fixed inset-y-0 left-0 z-50 w-64 border-r border-gray-200 bg-white transform transition-transform duration-300 lg:translate-x-0 lg:static flex-shrink-0
                 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-            `} style={{ background: 'var(--bg-sidebar)', borderColor: 'var(--border-default)' }}>
-                <div className="flex flex-col h-full p-8">
+            `}>
+                <div className="flex flex-col h-full p-5">
                     {/* Logo */}
-                    <Link to="/" className="flex items-center gap-3 mb-10 px-2">
-                        <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-sm">
-                            <Activity className="w-6 h-6 text-white" />
+                    <Link to="/" className="flex items-center gap-3 mb-8 px-2">
+                        <div className="w-9 h-9 bg-teal-600 rounded-lg flex items-center justify-center shadow-sm">
+                            <Activity className="w-5 h-5 text-white" />
                         </div>
-                        <span className="text-xl font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>
-                            OPD<span className="text-blue-600">Heal</span>
+                        <span className="text-lg font-bold tracking-tight text-gray-900">
+                            OPD<span className="text-teal-600">Heal</span>
                         </span>
                     </Link>
 
                     {/* Navigation */}
                     <nav className="flex-1 space-y-1 overflow-y-auto pr-1">
-                        <div className="text-[10px] font-semibold uppercase tracking-widest mb-4 px-4 opacity-50" style={{ color: 'var(--text-muted)' }}>Navigation</div>
+                        <div className="text-[10px] font-semibold uppercase tracking-widest mb-3 px-4 text-gray-400">
+                            Navigation
+                        </div>
                         {menuItems.map((item) => (
                             <SidebarItem
                                 key={item.path}
@@ -134,17 +134,12 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, role
                     </nav>
 
                     {/* Footer Actions */}
-                    <div className="mt-6 pt-5 border-t space-y-2" style={{ borderColor: 'var(--border-default)' }}>
-                        {/* Theme toggle */}
-                        <div className="flex items-center justify-between px-4 py-2.5 rounded-xl" style={{ background: 'var(--bg-input)' }}>
-                            <span className="text-xs font-semibold" style={{ color: 'var(--text-secondary)' }}>Appearance</span>
-                            <ThemeToggle showLabel />
-                        </div>
+                    <div className="mt-5 pt-4 border-t border-gray-200 space-y-2">
                         <button
                             onClick={handleLogout}
-                            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/10 transition-all font-semibold group text-sm"
+                            className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-red-600 hover:bg-red-50 transition-all font-medium text-sm"
                         >
-                            <LogOut size={18} className="group-hover:-translate-x-1 transition-transform" />
+                            <LogOut size={18} />
                             <span>Sign Out</span>
                         </button>
                     </div>
@@ -154,47 +149,39 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, role
             {/* Main Content */}
             <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
                 {/* Top Header */}
-                <header className="h-16 backdrop-blur-md border-b flex items-center justify-between px-6 sticky top-0 z-30 transition-colors flex-shrink-0"
-                    style={{ background: 'var(--bg-header)', borderColor: 'var(--border-default)' }}>
+                <header className="h-14 bg-white border-b border-gray-200 flex items-center justify-between px-6 sticky top-0 z-30 flex-shrink-0">
                     <button
-                        className="p-3 -ml-3 lg:hidden text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-2xl"
+                        className="p-2 -ml-2 lg:hidden text-gray-500 hover:bg-gray-100 rounded-lg"
                         onClick={() => setIsSidebarOpen(true)}
                     >
-                        <Menu size={28} />
+                        <Menu size={24} />
                     </button>
 
                     <div className="flex-1 max-w-xl mx-8 hidden md:block">
                         <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                             <input
                                 type="text"
-                                placeholder="Search patients, records, doctors..."
-                                className="w-full rounded-lg py-2.5 pl-10 pr-4 text-sm font-medium outline-none transition-all"
-                                style={{
-                                    background: 'var(--bg-input)',
-                                    color: 'var(--text-primary)',
-                                    border: '1.5px solid var(--border-default)'
-                                }}
+                                placeholder="Search patients, records, doctors"
+                                className="w-full rounded-lg py-2.5 pl-10 pr-4 text-sm font-medium outline-none bg-gray-50 border border-gray-200 focus:border-teal-400 focus:ring-2 focus:ring-teal-100 transition-all"
                             />
                         </div>
                     </div>
 
                     <div className="flex items-center gap-4">
-                        <button className="p-2 transition-colors rounded-lg relative" style={{ color: 'var(--text-muted)' }}
-                            onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-input)')}
-                            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                        <button className="p-2 transition-colors rounded-lg text-gray-500 hover:bg-gray-100 relative">
                             <Bell size={20} />
-                            <span className="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full border border-white dark:border-slate-900"></span>
+                            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
                         </button>
 
-                        <div className="h-8 w-px" style={{ background: 'var(--border-default)' }}></div>
+                        <div className="h-8 w-px bg-gray-200"></div>
 
                         <div className="flex items-center gap-3 cursor-pointer">
                             <div className="text-right hidden sm:block">
-                                <div className="text-sm font-semibold capitalize" style={{ color: 'var(--text-primary)' }}>{username}</div>
-                                <div className="text-[10px] font-semibold text-blue-600 uppercase tracking-wider">{role}</div>
+                                <div className="text-sm font-medium text-gray-900">{username}</div>
+                                <div className="text-[10px] font-semibold text-teal-600 uppercase tracking-wider">{role}</div>
                             </div>
-                            <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold text-sm shadow-sm">
+                            <div className="w-9 h-9 rounded-full bg-teal-600 flex items-center justify-center text-white font-semibold text-sm shadow-sm">
                                 {username?.charAt(0).toUpperCase()}
                             </div>
                         </div>
@@ -202,7 +189,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, role
                 </header>
 
                 {/* Page Content */}
-                <div className="flex-1 overflow-y-auto p-6 md:p-8" style={{ background: 'var(--bg-main)' }}>
+                <div className="flex-1 overflow-y-auto p-6 md:p-8">
                     <div className="max-w-7xl mx-auto">
                         {children}
                     </div>
