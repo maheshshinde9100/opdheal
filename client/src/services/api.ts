@@ -14,6 +14,19 @@ import type {
     PatientHistoryDto,
 } from '../types';
 
+export interface PaymentRequestDto {
+    amount: number;
+    patientId: string;
+    appointmentId: string;
+}
+
+export interface PaymentResponseDto {
+    orderId: string;
+    currency: string;
+    amount: number;
+    razorpayKeyId: string;
+}
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
 
 class ApiService {
@@ -524,6 +537,70 @@ class ApiService {
             headers: this.getHeaders(),
         });
         return this.handleResponse<DashboardStats>(response);
+    }
+
+    async getDoctorDashboardStats(doctorId: string): Promise<DashboardStats> {
+        const response = await fetch(`${API_BASE_URL}/api/dashboard/doctor/${doctorId}/stats`, {
+            headers: this.getHeaders(),
+        });
+        return this.handleResponse<DashboardStats>(response);
+    }
+
+    async getPatientDashboardStats(patientId: string): Promise<DashboardStats> {
+        const response = await fetch(`${API_BASE_URL}/api/dashboard/patient/${patientId}/stats`, {
+            headers: this.getHeaders(),
+        });
+        return this.handleResponse<DashboardStats>(response);
+    }
+
+    async markAppointmentComplete(id: string): Promise<Appointment> {
+        const response = await fetch(`${API_BASE_URL}/api/appointments/${id}/complete`, {
+            method: 'PUT',
+            headers: this.getHeaders(),
+        });
+        return this.handleResponse<Appointment>(response);
+    }
+
+    async markAppointmentCancelled(id: string): Promise<Appointment> {
+        const response = await fetch(`${API_BASE_URL}/api/appointments/${id}/cancel`, {
+            method: 'PUT',
+            headers: this.getHeaders(),
+        });
+        return this.handleResponse<Appointment>(response);
+    }
+
+    async markAppointmentNoShow(id: string): Promise<Appointment> {
+        const response = await fetch(`${API_BASE_URL}/api/appointments/${id}/no-show`, {
+            method: 'PUT',
+            headers: this.getHeaders(),
+        });
+        return this.handleResponse<Appointment>(response);
+    }
+
+    async markAppointmentConfirmed(id: string): Promise<Appointment> {
+        const response = await fetch(`${API_BASE_URL}/api/appointments/${id}/confirm`, {
+            method: 'PUT',
+            headers: this.getHeaders(),
+        });
+        return this.handleResponse<Appointment>(response);
+    }
+
+    async markAppointmentInProgress(id: string): Promise<Appointment> {
+        const response = await fetch(`${API_BASE_URL}/api/appointments/${id}/in-progress`, {
+            method: 'PUT',
+            headers: this.getHeaders(),
+        });
+        return this.handleResponse<Appointment>(response);
+    }
+
+    // Payment API
+    async createPaymentOrder(data: PaymentRequestDto): Promise<PaymentResponseDto> {
+        const response = await fetch(`${API_BASE_URL}/api/payments/create-order`, {
+            method: 'POST',
+            headers: this.getHeaders(),
+            body: JSON.stringify(data),
+        });
+        return this.handleResponse<PaymentResponseDto>(response);
     }
 }
 

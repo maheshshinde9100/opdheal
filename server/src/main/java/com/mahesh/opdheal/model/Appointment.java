@@ -31,8 +31,9 @@ public class Appointment {
 
     private String notes;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public enum Status {
-        SCHEDULED, CONFIRMED, IN_PROGRESS, COMPLETED, CANCELLED
+        SCHEDULED, CONFIRMED, IN_PROGRESS, COMPLETED, CANCELLED, NO_SHOW
     }
 }

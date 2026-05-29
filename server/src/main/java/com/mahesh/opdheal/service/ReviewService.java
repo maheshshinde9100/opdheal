@@ -27,6 +27,7 @@ public class ReviewService {
     @Transactional
     public Review createReview(Review review) {
         review.setCreatedAt(LocalDateTime.now());
+        review.setUpdatedAt(LocalDateTime.now());
         Review savedReview = reviewRepository.save(review);
         updateDoctorRating(review.getDoctorId());
         return savedReview;

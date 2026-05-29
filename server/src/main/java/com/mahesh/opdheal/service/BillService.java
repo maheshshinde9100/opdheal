@@ -20,6 +20,8 @@ public class BillService {
     public Bill createBill(Bill bill) {
         bill.setBillDate(LocalDateTime.now());
         bill.setTotalAmount(bill.getConsultationFee().add(bill.getMedicineFee()));
+        bill.setCreatedAt(LocalDateTime.now());
+        bill.setUpdatedAt(LocalDateTime.now());
         return billRepository.save(bill);
     }
 
@@ -57,6 +59,7 @@ public class BillService {
             bill.setPaymentDate(LocalDateTime.now());
         }
         bill.setItems(billDetails.getItems());
+        bill.setUpdatedAt(LocalDateTime.now());
 
         return billRepository.save(bill);
     }

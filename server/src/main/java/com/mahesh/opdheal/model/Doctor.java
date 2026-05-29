@@ -6,6 +6,7 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -36,4 +37,6 @@ public class Doctor {
 
     private double averageRating = 0.0;
     private int ratingCount = 0;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

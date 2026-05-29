@@ -78,4 +78,39 @@ public class AppointmentController {
         appointmentService.deleteAppointment(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/{id}/complete")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('DOCTOR')")
+    public ResponseEntity<AppointmentDto> markAsCompleted(@PathVariable String id) {
+        Appointment appointment = appointmentService.markAsCompleted(id);
+        return ResponseEntity.ok(appointmentService.toDto(appointment));
+    }
+
+    @PutMapping("/{id}/cancel")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('DOCTOR') or hasRole('PATIENT')")
+    public ResponseEntity<AppointmentDto> markAsCancelled(@PathVariable String id) {
+        Appointment appointment = appointmentService.markAsCancelled(id);
+        return ResponseEntity.ok(appointmentService.toDto(appointment));
+    }
+
+    @PutMapping("/{id}/no-show")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('DOCTOR')")
+    public ResponseEntity<AppointmentDto> markAsNoShow(@PathVariable String id) {
+        Appointment appointment = appointmentService.markAsNoShow(id);
+        return ResponseEntity.ok(appointmentService.toDto(appointment));
+    }
+
+    @PutMapping("/{id}/confirm")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('DOCTOR') or hasRole('PATIENT')")
+    public ResponseEntity<AppointmentDto> markAsConfirmed(@PathVariable String id) {
+        Appointment appointment = appointmentService.markAsConfirmed(id);
+        return ResponseEntity.ok(appointmentService.toDto(appointment));
+    }
+
+    @PutMapping("/{id}/in-progress")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('DOCTOR')")
+    public ResponseEntity<AppointmentDto> markAsInProgress(@PathVariable String id) {
+        Appointment appointment = appointmentService.markAsInProgress(id);
+        return ResponseEntity.ok(appointmentService.toDto(appointment));
+    }
 }
