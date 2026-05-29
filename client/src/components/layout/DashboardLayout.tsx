@@ -78,6 +78,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, role
 
     const adminMenuItems = [
         { icon: <LayoutDashboard size={20} />, label: 'Control Panel', path: '/admin/dashboard' },
+        { icon: <Users size={20} />, label: 'Users', path: '/admin/users' },
         { icon: <HeartPulse size={20} />, label: 'Doctors', path: '/admin/doctors' },
         { icon: <Users size={20} />, label: 'Patients', path: '/admin/patients' },
         { icon: <Calendar size={20} />, label: 'Appointments', path: '/admin/appointments' },

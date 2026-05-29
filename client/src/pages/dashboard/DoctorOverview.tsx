@@ -18,7 +18,7 @@ import type { Appointment } from '../../types';
 
 export const DoctorOverview: React.FC = () => {
     const [appointments, setAppointments] = useState<Appointment[]>([]);
-    const [todayCount, setTodayCount] = useState<number>(0);
+    const [stats, setStats] = useState<any>(null);
     const username = api.getUsername();
     const profileId = api.getProfileId();
 
@@ -26,12 +26,12 @@ export const DoctorOverview: React.FC = () => {
         const loadData = async () => {
             try {
                 if (profileId) {
-                    const allAppts = await api.getDoctorAppointments(profileId);
+                    const [allAppts, doctorStats] = await Promise.all([
+                        api.getDoctorAppointments(profileId),
+                        api.getDoctorDashboardStats(profileId)
+                    ]);
                     setAppointments(allAppts.slice(0, 5));
-
-                    const todayDateString = new Date().toISOString().split('T')[0];
-                    const count = allAppts.filter(a => a.appointmentDate?.startsWith(todayDateString)).length;
-                    setTodayCount(count);
+                    setStats(doctorStats);
                 } else {
                     const allAppts = await api.getAllAppointments();
                     setAppointments(allAppts.slice(0, 5));
@@ -44,10 +44,10 @@ export const DoctorOverview: React.FC = () => {
     }, [profileId]);
 
     const statCards = [
-        { label: 'Today\'s Schedule', value: todayCount.toString(), subValue: 'Appointments pending', icon: <Calendar className="text-blue-600" />, color: 'bg-blue-50', trend: 'Active' },
-        { label: 'New Patients', value: '5', subValue: 'Since yesterday', icon: <Users className="text-emerald-600" />, color: 'bg-emerald-50', trend: '+10%' },
-        { label: 'Patient Satisfaction', value: '4.9', subValue: 'Out of 5 stars', icon: <Star className="text-amber-500" />, color: 'bg-amber-50', trend: 'High' },
-        { label: 'Pending Reviews', value: '8', subValue: 'Lab reports/Results', icon: <AlertCircle className="text-rose-600" />, color: 'bg-rose-50', trend: 'Action' },
+        { label: 'Today\'s Schedule', value: stats?.todayAppointments?.toString() || '0', subValue: 'Appointments pending', icon: <Calendar className="text-teal-600" />, color: 'bg-teal-50', trend: 'Active' },
+        { label: 'Total Patients', value: stats?.uniquePatients?.toString() || '0', subValue: 'All time', icon: <Users className="text-emerald-600" />, color: 'bg-emerald-50', trend: 'Active' },
+        { label: 'Prescriptions', value: stats?.totalPrescriptions?.toString() || '0', subValue: 'Prescriptions issued', icon: <Star className="text-amber-500" />, color: 'bg-amber-50', trend: 'High' },
+        { label: 'Total Appointments', value: stats?.totalAppointments?.toString() || '0', subValue: 'All time', icon: <AlertCircle className="text-teal-600" />, color: 'bg-teal-50', trend: 'Action' },
     ];
 
     return (
@@ -57,15 +57,15 @@ export const DoctorOverview: React.FC = () => {
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div>
                         <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
-                            Welcome, <span className="text-blue-600">Dr. {username}</span>
+                            Welcome, <span className="text-teal-600">Dr. {username}</span>
                         </h1>
-                        <p className="text-base text-slate-600 font-medium mt-1">You have {todayCount} appointments scheduled for today.</p>
+                        <p className="text-base text-slate-600 font-medium mt-1">You have {stats?.todayAppointments || 0} appointments scheduled for today.</p>
                     </div>
                     <div className="flex items-center gap-3">
                         <Button className="bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 shadow-sm font-semibold">
                             Manage Schedule
                         </Button>
-                        <Button className="bg-blue-600 hover:bg-blue-700 text-white shadow-sm font-semibold">
+                        <Button className="bg-teal-600 hover:bg-teal-700 text-white shadow-sm font-semibold">
                             Next Patient <ArrowRight size={18} className="ml-2" />
                         </Button>
                     </div>
@@ -118,7 +118,7 @@ export const DoctorOverview: React.FC = () => {
                                             <tr key={appt.id} className="hover:bg-slate-50/50 transition-colors">
                                                 <td className="px-6 py-4">
                                                     <div className="flex items-center gap-3">
-                                                        <div className="w-8 h-8 bg-blue-50 border border-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-sm">
+                                                        <div className="w-8 h-8 bg-teal-50 border border-teal-100 rounded-full flex items-center justify-center text-teal-600 font-bold text-sm">
                                                             {appt.patientName?.charAt(0) || 'P'}
                                                         </div>
                                                         <div>
@@ -132,7 +132,7 @@ export const DoctorOverview: React.FC = () => {
                                                     <div className="text-xs text-slate-500">Consultation</div>
                                                 </td>
                                                 <td className="px-6 py-4">
-                                                    <Badge className="bg-blue-50 text-blue-700 border border-blue-200 font-semibold px-2 py-0.5 rounded text-xs text-center border-solid mb-0 inline-block font-sans">Clinical Visit</Badge>
+                                                    <Badge className="bg-teal-50 text-teal-700 border border-teal-200 font-semibold px-2 py-0.5 rounded text-xs text-center border-solid mb-0 inline-block font-sans">Clinical Visit</Badge>
                                                 </td>
                                                 <td className="px-6 py-4">
                                                     <div className="flex items-center gap-2">
@@ -142,7 +142,7 @@ export const DoctorOverview: React.FC = () => {
                                                 </td>
                                                 <td className="px-6 py-4">
                                                     <div className="flex items-center gap-2">
-                                                        <Button size="sm" className="h-8 w-8 p-0 bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-100 shadow-none">
+                                                        <Button size="sm" className="h-8 w-8 p-0 bg-teal-50 text-teal-600 hover:bg-teal-100 border border-teal-100 shadow-none">
                                                             <Video size={14} />
                                                         </Button>
                                                         <Button size="sm" className="h-8 w-8 p-0 bg-white text-slate-600 hover:bg-slate-50 border border-slate-200 shadow-none">
@@ -172,7 +172,7 @@ export const DoctorOverview: React.FC = () => {
                                     <div className="text-emerald-600 bg-emerald-50 p-2 rounded-lg border border-emerald-100"><TrendingUp size={20} /></div>
                                 </div>
                                 <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                                    <div className="bg-blue-600 h-full w-[84%] rounded-full shadow-sm"></div>
+                                    <div className="bg-teal-600 h-full w-[84%] rounded-full shadow-sm"></div>
                                 </div>
                                 <p className="text-sm font-normal text-slate-600">Performance metrics indicate above-average schedule adherence this week.</p>
                             </div>

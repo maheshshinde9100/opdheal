@@ -27,6 +27,7 @@ import { AdminPatients } from './pages/dashboard/AdminPatients';
 import { AdminAppointments } from './pages/dashboard/AdminAppointments';
 import { AdminBilling } from './pages/dashboard/AdminBilling';
 import { AdminSettings } from './pages/dashboard/AdminSettings';
+import { AdminUsers } from './pages/dashboard/AdminUsers';
 import api from './services/api';
 
 // Protected Route Component
@@ -236,6 +237,14 @@ function App() {
           element={
             <ProtectedRoute requiredRole="ADMIN">
               <AdminSettings />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/users"
+          element={
+            <ProtectedRoute requiredRole="ADMIN">
+              <AdminUsers />
             </ProtectedRoute>
           }
         />
