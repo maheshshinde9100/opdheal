@@ -128,57 +128,6 @@ graph LR
 
 ---
 
-## 🚀 Getting Started
-
-### Prerequisites
-
-- **Java**: JDK 21
-- **Node.js**: v18+ and npm
-- **MongoDB**: MongoDB Atlas or local instance
-- **Maven**: 3.8+
-
-### Installation
-
-#### 1️⃣ Clone the Repository
-```bash
-git clone <your-repository-url>
-cd opdheal
-```
-
-#### 2️⃣ Backend Setup
-```bash
-cd server
-
-# Configure database connection
-cp src/main/resources/application.properties.example src/main/resources/application.properties
-# Edit application.properties with your MongoDB and Razorpay credentials
-
-# Build and run
-mvn clean install
-mvn spring-boot:run
-```
-
-Backend will start on `http://localhost:8080`
-
-#### 3️⃣ Frontend Setup
-```bash
-cd client
-
-# Install dependencies
-npm install
-
-# Configure API endpoint
-cp .env.example .env
-# Edit .env with backend URL (default: http://localhost:8080)
-
-# Start development server
-npm run dev
-```
-
-Frontend will start on `http://localhost:5173`
-
----
-
 ## 🏗️ System Architecture
 
 ### System Workflow
