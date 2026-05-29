@@ -2,6 +2,8 @@ package com.mahesh.opdheal.service;
 
 import com.mahesh.opdheal.dto.PaymentRequestDto;
 import com.mahesh.opdheal.dto.PaymentResponseDto;
+import com.mahesh.opdheal.model.Payment;
+import com.mahesh.opdheal.repository.PaymentRepository;
 import com.razorpay.Order;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 
 @Service
 @Slf4j
@@ -25,6 +28,12 @@ public class RazorpayService {
 
     @Value("${razorpay.currency:INR}")
     private String currency;
+
+    private final PaymentRepository paymentRepository;
+
+    public RazorpayService(PaymentRepository paymentRepository) {
+        this.paymentRepository = paymentRepository;
+    }
 
     public PaymentResponseDto createOrder(PaymentRequestDto request) throws RazorpayException {
         RazorpayClient razorpayClient = new RazorpayClient(razorpayKeyId, razorpayKeySecret);
@@ -42,6 +51,19 @@ public class RazorpayService {
         orderRequest.put("payment_capture", 1); // Auto capture
 
         Order order = razorpayClient.orders.create(orderRequest);
+
+        // Save payment record
+        Payment payment = new Payment();
+        payment.setOrderId("payment_" + System.currentTimeMillis());
+        payment.setRazorpayOrderId(order.get("id"));
+        payment.setPatientId(request.getPatientId());
+        payment.setAppointmentId(request.getAppointmentId());
+        payment.setAmount(request.getAmount());
+        payment.setCurrency(currency);
+        payment.setStatus("CREATED");
+        payment.setCreatedAt(LocalDateTime.now());
+        payment.setUpdatedAt(LocalDateTime.now());
+        paymentRepository.save(payment);
 
         PaymentResponseDto response = new PaymentResponseDto();
         response.setOrderId(order.get("id"));

@@ -4,21 +4,16 @@ import {
     Activity,
     Shield,
     Clock,
-    Users,
-    Star,
-    Video,
-    Calendar,
     ArrowRight,
     Stethoscope,
-    Database,
     HeartPulse,
     ShieldPlus,
     Building2,
-    CheckCircle
+    CheckCircle,
+    Calendar
 } from 'lucide-react';
 import { Button } from '../components/Button';
 import { Navbar } from '../components/layout/Navbar';
-import { Card } from '../components/Card';
 
 export const LandingPage: React.FC = () => {
     const navigate = useNavigate();
@@ -50,7 +45,7 @@ export const LandingPage: React.FC = () => {
                                 onClick={() => navigate('/register')}
                                 className="bg-teal-600 hover:bg-teal-700 text-white h-14 px-8 text-base font-semibold rounded-lg shadow-sm"
                             >
-                                Access Patient Portal <ArrowRight size={20} className="ml-2" />
+                                Access Patient Portal <ArrowRight size={20} />
                             </Button>
                             <Button
                                 variant="outline"
@@ -77,7 +72,7 @@ export const LandingPage: React.FC = () => {
                         </div>
                     </div>
 
-                    <div className="relative group lg:block hidden">
+                    <div className="relative lg:block hidden">
                         <div className="relative z-10 grid grid-cols-2 gap-4">
                             <div className="space-y-4 pt-8">
                                 <div className="p-6 bg-teal-50 rounded-2xl border border-teal-200">
@@ -126,6 +121,24 @@ export const LandingPage: React.FC = () => {
                     <div className="space-y-1">
                         <h3 className="text-4xl font-bold">99.9%</h3>
                         <p className="text-teal-100 font-medium text-sm">System Reliability</p>
+                    </div>
+                </div>
+            </section>
+
+            {/* Testimonial */}
+            <section className="py-16 bg-white border-b border-gray-200">
+                <div className="max-w-4xl mx-auto px-6">
+                    <div className="bg-gray-50 rounded-2xl p-10 border border-gray-200">
+                        <p className="text-xl text-gray-700 italic">
+                            "The transition to OPDHeal has reduced our administrative overhead by 40% and improved patient satisfaction significantly."
+                        </p>
+                        <div className="mt-8 flex items-center gap-4">
+                            <div className="w-14 h-14 rounded-full bg-emerald-200 flex items-center justify-center text-emerald-800 font-bold text-xl">M</div>
+                            <div>
+                                <div className="font-semibold text-gray-900 text-lg">Dr. Mahesh Shinde</div>
+                                <div className="text-sm text-gray-600">Chief Medical Officer</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>

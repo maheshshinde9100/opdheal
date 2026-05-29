@@ -96,9 +96,25 @@ export const PatientAppointments: React.FC = () => {
         }
     };
 
+    const loadRazorpayScript = (): Promise<void> => {
+        return new Promise((resolve) => {
+            // @ts-ignore
+            if (window.Razorpay) {
+                resolve();
+                return;
+            }
+            const script = document.createElement('script');
+            script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+            script.onload = () => resolve();
+            document.body.appendChild(script);
+        });
+    };
+
     const handlePayment = async (appt: Appointment) => {
         try {
             if (!profileId) return;
+            
+            await loadRazorpayScript();
             
             const paymentRequest: PaymentRequestDto = {
                 amount: 100,
@@ -108,7 +124,7 @@ export const PatientAppointments: React.FC = () => {
             
             const orderData = await api.createPaymentOrder(paymentRequest);
             
-            // @ts-ignore - Razorpay is loaded via script tag
+            // @ts-ignore - Razorpay is now loaded dynamically
             const options = {
                 key: orderData.razorpayKeyId,
                 amount: orderData.amount,

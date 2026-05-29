@@ -87,7 +87,7 @@ export const LoginPage: React.FC = () => {
                         <div className="mt-4 flex items-center gap-3">
                             <div className="w-10 h-10 rounded-full bg-gray-200"></div>
                             <div>
-                                <div className="font-semibold">Dr. James Wilson</div>
+                                <div className="font-semibold">Dr. Mahesh Shinde</div>
                                 <div className="text-sm text-white/60">Chief Medical Officer</div>
                             </div>
                         </div>
