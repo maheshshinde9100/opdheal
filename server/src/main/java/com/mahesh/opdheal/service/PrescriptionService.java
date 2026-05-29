@@ -98,6 +98,7 @@ public class PrescriptionService {
         prescription.setMedicines(prescriptionDetails.getMedicines());
         prescription.setInstructions(prescriptionDetails.getInstructions());
         prescription.setNotes(prescriptionDetails.getNotes());
+        prescription.setUpdatedAt(LocalDateTime.now());
 
         return prescriptionRepository.save(prescription);
     }

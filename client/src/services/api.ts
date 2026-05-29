@@ -525,6 +525,60 @@ class ApiService {
         });
         return this.handleResponse<DashboardStats>(response);
     }
+
+    async getDoctorDashboardStats(doctorId: string): Promise<DashboardStats> {
+        const response = await fetch(`${API_BASE_URL}/api/dashboard/doctor/${doctorId}/stats`, {
+            headers: this.getHeaders(),
+        });
+        return this.handleResponse<DashboardStats>(response);
+    }
+
+    async getPatientDashboardStats(patientId: string): Promise<DashboardStats> {
+        const response = await fetch(`${API_BASE_URL}/api/dashboard/patient/${patientId}/stats`, {
+            headers: this.getHeaders(),
+        });
+        return this.handleResponse<DashboardStats>(response);
+    }
+
+    async markAppointmentComplete(id: string): Promise<Appointment> {
+        const response = await fetch(`${API_BASE_URL}/api/appointments/${id}/complete`, {
+            method: 'PUT',
+            headers: this.getHeaders(),
+        });
+        return this.handleResponse<Appointment>(response);
+    }
+
+    async markAppointmentCancelled(id: string): Promise<Appointment> {
+        const response = await fetch(`${API_BASE_URL}/api/appointments/${id}/cancel`, {
+            method: 'PUT',
+            headers: this.getHeaders(),
+        });
+        return this.handleResponse<Appointment>(response);
+    }
+
+    async markAppointmentNoShow(id: string): Promise<Appointment> {
+        const response = await fetch(`${API_BASE_URL}/api/appointments/${id}/no-show`, {
+            method: 'PUT',
+            headers: this.getHeaders(),
+        });
+        return this.handleResponse<Appointment>(response);
+    }
+
+    async markAppointmentConfirmed(id: string): Promise<Appointment> {
+        const response = await fetch(`${API_BASE_URL}/api/appointments/${id}/confirm`, {
+            method: 'PUT',
+            headers: this.getHeaders(),
+        });
+        return this.handleResponse<Appointment>(response);
+    }
+
+    async markAppointmentInProgress(id: string): Promise<Appointment> {
+        const response = await fetch(`${API_BASE_URL}/api/appointments/${id}/in-progress`, {
+            method: 'PUT',
+            headers: this.getHeaders(),
+        });
+        return this.handleResponse<Appointment>(response);
+    }
 }
 
 export const api = new ApiService();

@@ -15,4 +15,5 @@ public class Review {
     private int rating; // e.g., 1 to 5
     private String comment;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

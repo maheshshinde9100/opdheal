@@ -32,4 +32,6 @@ public class MedicalRecord {
     private String treatment;
     private List<String> prescribedMedicines;
     private String notes;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

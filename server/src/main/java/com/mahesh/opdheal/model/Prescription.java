@@ -37,6 +37,8 @@ public class Prescription {
     private String instructions;
 
     private String notes;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     @Data
     public static class Medicine {

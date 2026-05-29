@@ -7,6 +7,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -31,4 +32,6 @@ public class Patient {
     private String bloodGroup;
     private String weight;
     private String medicalHistory;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

@@ -18,6 +18,8 @@ public class MedicalRecordService {
 
     public MedicalRecord createMedicalRecord(MedicalRecord medicalRecord) {
         medicalRecord.setRecordDate(LocalDateTime.now());
+        medicalRecord.setCreatedAt(LocalDateTime.now());
+        medicalRecord.setUpdatedAt(LocalDateTime.now());
         return medicalRecordRepository.save(medicalRecord);
     }
 
@@ -53,6 +55,7 @@ public class MedicalRecordService {
         record.setTreatment(recordDetails.getTreatment());
         record.setPrescribedMedicines(recordDetails.getPrescribedMedicines());
         record.setNotes(recordDetails.getNotes());
+        record.setUpdatedAt(LocalDateTime.now());
         
         return medicalRecordRepository.save(record);
     }

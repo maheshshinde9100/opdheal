@@ -10,6 +10,7 @@ import com.mahesh.opdheal.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,6 +26,8 @@ public class DoctorService {
     private UserRepository userRepository;
 
     public Doctor createDoctor(Doctor doctor) {
+        doctor.setCreatedAt(LocalDateTime.now());
+        doctor.setUpdatedAt(LocalDateTime.now());
         return doctorRepository.save(doctor);
     }
 
@@ -60,6 +63,7 @@ public class DoctorService {
         doctor.setExperienceYears(doctorDetails.getExperienceYears());
         doctor.setDepartment(doctorDetails.getDepartment());
         doctor.setAvailable(doctorDetails.isAvailable());
+        doctor.setUpdatedAt(LocalDateTime.now());
 
         return doctorRepository.save(doctor);
     }

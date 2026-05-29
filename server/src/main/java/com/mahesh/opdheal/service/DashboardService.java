@@ -1,5 +1,6 @@
 package com.mahesh.opdheal.service;
 
+import com.mahesh.opdheal.model.Appointment;
 import com.mahesh.opdheal.model.Bill;
 import com.mahesh.opdheal.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,8 @@ public class DashboardService {
     private PrescriptionRepository prescriptionRepository;
     @Autowired
     private BillRepository billRepository;
+    @Autowired
+    private MedicalRecordRepository medicalRecordRepository;
 
     public Map<String, Object> getStats() {
         Map<String, Object> stats = new HashMap<>();
@@ -62,6 +65,96 @@ public class DashboardService {
         } catch (Exception e) {
             stats.put("todayAppointments", 0L);
         }
+
+        return stats;
+    }
+
+    public Map<String, Object> getDoctorStats(String doctorId) {
+        Map<String, Object> stats = new HashMap<>();
+
+        // Doctor's appointments
+        List<Appointment> doctorAppointments = appointmentRepository.findByDoctorId(doctorId);
+        stats.put("totalAppointments", doctorAppointments.size());
+
+        // Today's appointments
+        try {
+            LocalDateTime startOfDay = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
+            LocalDateTime endOfDay = LocalDateTime.now().withHour(23).withMinute(59).withSecond(59).withNano(999999999);
+            long todayCount = doctorAppointments.stream()
+                    .filter(a -> a.getAppointmentDateTime().isAfter(startOfDay) && a.getAppointmentDateTime().isBefore(endOfDay))
+                    .count();
+            stats.put("todayAppointments", todayCount);
+        } catch (Exception e) {
+            stats.put("todayAppointments", 0L);
+        }
+
+        // Appointments by status
+        stats.put("scheduledAppointments", doctorAppointments.stream()
+                .filter(a -> a.getStatus() == Appointment.Status.SCHEDULED).count());
+        stats.put("confirmedAppointments", doctorAppointments.stream()
+                .filter(a -> a.getStatus() == Appointment.Status.CONFIRMED).count());
+        stats.put("inProgressAppointments", doctorAppointments.stream()
+                .filter(a -> a.getStatus() == Appointment.Status.IN_PROGRESS).count());
+        stats.put("completedAppointments", doctorAppointments.stream()
+                .filter(a -> a.getStatus() == Appointment.Status.COMPLETED).count());
+        stats.put("cancelledAppointments", doctorAppointments.stream()
+                .filter(a -> a.getStatus() == Appointment.Status.CANCELLED).count());
+        stats.put("noShowAppointments", doctorAppointments.stream()
+                .filter(a -> a.getStatus() == Appointment.Status.NO_SHOW).count());
+
+        // Total unique patients
+        long uniquePatients = doctorAppointments.stream()
+                .map(Appointment::getPatientId)
+                .distinct()
+                .count();
+        stats.put("uniquePatients", uniquePatients);
+
+        // Total prescriptions
+        stats.put("totalPrescriptions", prescriptionRepository.findByDoctorId(doctorId).size());
+
+        // Total medical records
+        stats.put("totalMedicalRecords", medicalRecordRepository.findByDoctorId(doctorId).size());
+
+        return stats;
+    }
+
+    public Map<String, Object> getPatientStats(String patientId) {
+        Map<String, Object> stats = new HashMap<>();
+
+        // Patient's appointments
+        List<Appointment> patientAppointments = appointmentRepository.findByPatientId(patientId);
+        stats.put("totalAppointments", patientAppointments.size());
+
+        // Upcoming appointments
+        try {
+            LocalDateTime now = LocalDateTime.now();
+            long upcomingCount = patientAppointments.stream()
+                    .filter(a -> a.getAppointmentDateTime().isAfter(now))
+                    .filter(a -> a.getStatus() == Appointment.Status.SCHEDULED ||
+                            a.getStatus() == Appointment.Status.CONFIRMED)
+                    .count();
+            stats.put("upcomingAppointments", upcomingCount);
+        } catch (Exception e) {
+            stats.put("upcomingAppointments", 0L);
+        }
+
+        // Appointments by status
+        stats.put("completedAppointments", patientAppointments.stream()
+                .filter(a -> a.getStatus() == Appointment.Status.COMPLETED).count());
+
+        // Total prescriptions
+        stats.put("totalPrescriptions", prescriptionRepository.findByPatientId(patientId).size());
+
+        // Total medical records
+        stats.put("totalMedicalRecords", medicalRecordRepository.findByPatientId(patientId).size());
+
+        // Bills
+        List<Bill> patientBills = billRepository.findByPatientId(patientId);
+        stats.put("totalBills", patientBills.size());
+        stats.put("paidBills", patientBills.stream()
+                .filter(b -> b.getStatus() == Bill.Status.PAID).count());
+        stats.put("pendingBills", patientBills.stream()
+                .filter(b -> b.getStatus() == Bill.Status.PENDING).count());
 
         return stats;
     }

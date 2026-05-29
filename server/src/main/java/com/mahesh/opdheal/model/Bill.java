@@ -41,6 +41,8 @@ public class Bill {
     private LocalDateTime billDate;
     private LocalDateTime paymentDate;
     private List<String> items; // Description of items billed
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public enum Status {
         PENDING, PAID, OVERDUE

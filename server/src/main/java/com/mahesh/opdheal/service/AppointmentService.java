@@ -1,3 +1,4 @@
+
 package com.mahesh.opdheal.service;
 
 import com.mahesh.opdheal.exception.ResourceNotFoundException;
@@ -56,6 +57,7 @@ public class AppointmentService {
 
     public Appointment createAppointment(Appointment appointment) {
         appointment.setCreatedAt(LocalDateTime.now());
+        appointment.setUpdatedAt(LocalDateTime.now());
         return appointmentRepository.save(appointment);
     }
 
@@ -108,6 +110,52 @@ public class AppointmentService {
         if (appointmentDetails.getStatus() != null) appointment.setStatus(appointmentDetails.getStatus());
         if (appointmentDetails.getNotes() != null) appointment.setNotes(appointmentDetails.getNotes());
 
+        appointment.setUpdatedAt(LocalDateTime.now());
+        return appointmentRepository.save(appointment);
+    }
+
+    public Appointment markAsCompleted(String id) {
+        Appointment appointment = appointmentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Appointment not found with id: " + id));
+
+        appointment.setStatus(Appointment.Status.COMPLETED);
+        appointment.setUpdatedAt(LocalDateTime.now());
+        return appointmentRepository.save(appointment);
+    }
+
+    public Appointment markAsCancelled(String id) {
+        Appointment appointment = appointmentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Appointment not found with id: " + id));
+
+        appointment.setStatus(Appointment.Status.CANCELLED);
+        appointment.setUpdatedAt(LocalDateTime.now());
+        return appointmentRepository.save(appointment);
+    }
+
+    public Appointment markAsNoShow(String id) {
+        Appointment appointment = appointmentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Appointment not found with id: " + id));
+
+        appointment.setStatus(Appointment.Status.NO_SHOW);
+        appointment.setUpdatedAt(LocalDateTime.now());
+        return appointmentRepository.save(appointment);
+    }
+
+    public Appointment markAsConfirmed(String id) {
+        Appointment appointment = appointmentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Appointment not found with id: " + id));
+
+        appointment.setStatus(Appointment.Status.CONFIRMED);
+        appointment.setUpdatedAt(LocalDateTime.now());
+        return appointmentRepository.save(appointment);
+    }
+
+    public Appointment markAsInProgress(String id) {
+        Appointment appointment = appointmentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Appointment not found with id: " + id));
+
+        appointment.setStatus(Appointment.Status.IN_PROGRESS);
+        appointment.setUpdatedAt(LocalDateTime.now());
         return appointmentRepository.save(appointment);
     }
 
