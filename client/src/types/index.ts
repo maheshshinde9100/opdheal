@@ -53,6 +53,26 @@ export interface Patient {
     updatedAt?: string;
 }
 
+export interface PatientDto {
+    id: string;
+    userId: string;
+    user?: User;
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+    dateOfBirth?: string;
+    gender?: 'MALE' | 'FEMALE' | 'OTHER';
+    phoneNumber?: string;
+    address?: string;
+    bloodGroup?: string;
+    weight?: string;
+    emergencyContact?: string;
+    medicalHistory?: string;
+    allergies?: string;
+    createdAt?: string;
+    updatedAt?: string;
+}
+
 export interface PatientHistoryDto {
     patient: Patient;
     appointments: Appointment[];

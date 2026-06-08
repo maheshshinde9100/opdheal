@@ -67,13 +67,12 @@ export const PatientAppointments: React.FC = () => {
         setIsSubmitting(true);
         try {
             await api.createAppointment({
-                patientId: profileId,
+                patientId: profileId || '',
                 doctorId: booking.doctorId,
-                appointmentDate: booking.date,
-                appointmentTime: booking.time,
+                appointmentDateTime: `${booking.date}T${booking.time}:00`,
                 reasonForVisit: booking.reason,
                 status: 'SCHEDULED',
-            } as any);
+            });
             setSuccessMsg('Appointment booked successfully');
             setShowBookModal(false);
             setBooking({ doctorId: '', date: '', time: '', reason: '' });
@@ -116,8 +115,9 @@ export const PatientAppointments: React.FC = () => {
             
             await loadRazorpayScript();
             
+            const doctor = doctors.find(d => d.id === appt.doctorId);
             const paymentRequest: PaymentRequestDto = {
-                amount: 100,
+                amount: doctor?.consultationFee || 500,
                 patientId: profileId,
                 appointmentId: appt.id
             };
@@ -126,12 +126,12 @@ export const PatientAppointments: React.FC = () => {
             
             // @ts-ignore - Razorpay is now loaded dynamically
             const options = {
-                key: orderData.razorpayKeyId,
+                key: import.meta.env.VITE_RAZORPAY_KEY_ID,
                 amount: orderData.amount,
                 currency: orderData.currency,
                 name: "OPDHeal",
                 description: "Appointment Payment",
-                order_id: orderData.orderId,
+                order_id: orderData.id,
                 handler: function (response: any) {
                     alert("Payment processed successfully");
                 },
@@ -139,12 +139,12 @@ export const PatientAppointments: React.FC = () => {
                     name: api.getUsername() || "Patient",
                 },
                 theme: {
-                    color: "#0f766e",
+                    color: "#0d9488", // Teal color
                 },
             };
             
             // @ts-ignore
-            const rzp = new Razorpay(options);
+            const rzp = new window.Razorpay(options);
             rzp.open();
         } catch (err) {
             console.error('Payment failed', err);

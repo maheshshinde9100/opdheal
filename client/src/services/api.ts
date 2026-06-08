@@ -4,6 +4,7 @@ import type {
     RegisterRequest,
     User,
     Patient,
+    PatientDto,
     Doctor,
     Appointment,
     MedicalRecord,
@@ -21,7 +22,7 @@ export interface PaymentRequestDto {
 }
 
 export interface PaymentResponseDto {
-    orderId: string;
+    id: string;
     currency: string;
     amount: number;
     razorpayKeyId: string;
@@ -192,6 +193,13 @@ class ApiService {
             headers: this.getHeaders(),
         });
         return this.handleResponse<PatientHistoryDto>(response);
+    }
+
+    async getPatientsByDoctor(doctorId: string): Promise<PatientDto[]> {
+        const response = await fetch(`${API_BASE_URL}/api/patients/doctor/${doctorId}`, {
+            headers: this.getHeaders(),
+        });
+        return this.handleResponse<PatientDto[]>(response);
     }
 
     // Doctor API

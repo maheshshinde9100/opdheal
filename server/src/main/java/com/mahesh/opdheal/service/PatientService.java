@@ -94,6 +94,15 @@ public class PatientService {
         return historyDto;
     }
 
+    public List<PatientDto> getPatientsByDoctor(String doctorId) {
+        List<Appointment> appointments = appointmentRepository.findByDoctorId(doctorId);
+        List<String> patientIds = appointments.stream()
+                .map(Appointment::getPatientId)
+                .distinct()
+                .toList();
+        return patientRepository.findAllById(patientIds).stream().map(this::toPatientDto).toList();
+    }
+
     private PatientDto toPatientDto(Patient patient) {
         PatientDto dto = new PatientDto();
         dto.setId(patient.getId());
