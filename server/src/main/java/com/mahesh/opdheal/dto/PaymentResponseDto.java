@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PaymentResponseDto {
     private String orderId;
+    private String id; // for frontend compatibility
     private String currency;
     private Long amount;
     private String razorpayKeyId;

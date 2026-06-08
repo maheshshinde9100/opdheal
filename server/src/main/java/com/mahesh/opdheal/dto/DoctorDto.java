@@ -19,4 +19,5 @@ public class DoctorDto {
     private boolean available;
     private double averageRating;
     private int ratingCount;
+    private double consultationFee;
 }

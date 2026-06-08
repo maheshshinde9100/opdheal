@@ -2,6 +2,7 @@ package com.mahesh.opdheal.dto;
 
 import lombok.Data;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -20,4 +21,6 @@ public class PatientDto {
     private String bloodGroup;
     private String weight;
     private String medicalHistory;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

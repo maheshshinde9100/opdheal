@@ -37,6 +37,7 @@ public class Doctor {
 
     private double averageRating = 0.0;
     private int ratingCount = 0;
+    private double consultationFee = 500.0; // Fixed charge as per user request
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

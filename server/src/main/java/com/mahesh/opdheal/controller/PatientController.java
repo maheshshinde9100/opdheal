@@ -40,7 +40,7 @@ public class PatientController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('DOCTOR')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('DOCTOR') or @customSecurityExpression.hasUserId(authentication, #id)")
     public ResponseEntity<Patient> updatePatient(@PathVariable String id, @Valid @RequestBody Patient patient) {
         return ResponseEntity.ok(patientService.updatePatient(id, patient));
     }
@@ -56,5 +56,11 @@ public class PatientController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('DOCTOR') or @customSecurityExpression.hasUserId(authentication, #id)")
     public ResponseEntity<PatientHistoryDto> getPatientHistory(@PathVariable String id) {
         return ResponseEntity.ok(patientService.getPatientHistory(id));
+    }
+
+    @GetMapping("/doctor/{doctorId}")
+    @PreAuthorize("hasRole('ADMIN') or @customSecurityExpression.hasUserId(authentication, #doctorId)")
+    public ResponseEntity<List<PatientDto>> getPatientsByDoctor(@PathVariable String doctorId) {
+        return ResponseEntity.ok(patientService.getPatientsByDoctor(doctorId));
     }
 }

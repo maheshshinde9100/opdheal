@@ -67,6 +67,7 @@ public class RazorpayService {
 
         PaymentResponseDto response = new PaymentResponseDto();
         response.setOrderId(order.get("id"));
+        response.setId(order.get("id")); // for frontend compatibility
         response.setCurrency(currency);
         response.setAmount(amountInPaise);
         response.setRazorpayKeyId(razorpayKeyId);

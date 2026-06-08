@@ -92,6 +92,7 @@ public class DoctorService {
         dto.setAvailable(doctor.isAvailable());
         dto.setAverageRating(doctor.getAverageRating());
         dto.setRatingCount(doctor.getRatingCount());
+        dto.setConsultationFee(doctor.getConsultationFee());
 
         userRepository.findById(doctor.getUserId()).ifPresent(u -> {
             dto.setFirstName(u.getFirstName());
